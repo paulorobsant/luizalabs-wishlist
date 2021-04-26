@@ -1,0 +1,33 @@
+version: "3.5"
+
+services:
+  prod_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "global_touch/api-app:prod"
+    restart: unless-stopped
+    container_name: api-app-prod
+    ports:
+     - "8001:80"
+    networks:
+      - network
+
+  rabbit:
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      timeout: 5s
+      retries: 5
+    image: "rabbitmq:3-management"
+    networks:
+      - network
+    ports:
+      # The standard AMQP protocol port
+      - "5672:5672"
+      # HTTP management UI
+      - "15672:15672"
+
+networks:
+  network:
+    external: 
+      name: globaltouch-network

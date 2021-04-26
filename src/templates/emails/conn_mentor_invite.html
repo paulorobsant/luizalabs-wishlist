@@ -1,0 +1,21 @@
+{% extends "emails/base_template.html" %}
+
+{% block content %}
+    <p>
+        Olá, <strong>{{name}}</strong>! Como você está?
+    </p>
+
+    <p>
+        Há alguns dias atrás, alguns usuários solicitaram conexões com pessoas que soubessem sobre <strong>{{challenge}}</strong> e após uma profunda análise da nossa inteligencia artificial, nós descobrimos que você seria a melhor pessoa para ensinar sobre esse assunto.
+    </p>
+
+    <p>
+        E ai, você aceita esse desafio? Se sim, clique no botão abaixo para recomendar os melhores dias e horários.
+    </p>
+
+    <button>Iniciar conexão!</button>
+
+    <p>
+        Saudações,<strong>Helena.</strong>
+    </p>
+{% endblock %}

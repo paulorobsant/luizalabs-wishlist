@@ -1,0 +1,16 @@
+{% extends "emails/base_template.html" %}
+
+
+{% block content %}
+    <p>
+        Hello, <strong>{{target_conn_name}}</strong>! How are you?
+    </p>
+
+    <p>
+        Your connection to {{other_conn_name}} has been successfully scheduled! Just to remind you, your connection will cover the topic related to {{challenge}}.
+    </p>
+
+    <p>
+        Regards,<strong>Helena.</strong>
+    </p>
+{% endblock %}
