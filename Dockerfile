@@ -7,7 +7,7 @@ COPY requirements.txt /app/requirements.txt
 
 RUN pip install -r ./requirements.txt
 
-EXPOSE 80
+EXPOSE 8001
 CMD ["main.py"]
 ENTRYPOINT ["python3"]
 
