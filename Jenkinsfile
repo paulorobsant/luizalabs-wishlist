@@ -30,7 +30,7 @@ pipeline {
         
         stage('Deploying staging') {
             when { 
-                expression { env.GIT_BRANCH == 'origin/production' }
+                expression { env.GIT_BRANCH == 'origin/master' }
             }
             
             stages {
