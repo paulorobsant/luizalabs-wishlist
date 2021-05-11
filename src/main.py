@@ -58,7 +58,9 @@ app.include_router(router, prefix=settings.API_STR)
 
 if __name__ == "__main__":
     add_all_terms()
-    add_all_users(n=20)
     add_all_companies()
+
+    if settings.ENV_NAME == 'local':
+        add_all_users(n=20)
 
     uvicorn.run(app, host=settings.SERVER_HOST, port=settings.SERVER_PORT)
