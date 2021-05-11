@@ -10,7 +10,7 @@ load_dotenv()
 """
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "be")
-SERVER_HOST = os.getenv("SERVER_HOST", "localhost")
+SERVER_HOST = os.getenv("SERVER_HOST", "0.0.0.0")
 SERVER_PORT = os.getenv("SERVER_PORT", 8001)
 ENV_NAME = os.getenv("ENV", "local")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
