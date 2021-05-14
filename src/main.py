@@ -5,21 +5,14 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 import settings
-from core.database.session import ENGINE, Base
 from router import router
+from seeds.input_companies import add_all_companies
 from seeds.input_terms import add_all_terms
 from seeds.input_users import add_all_users
-from seeds.input_companies import add_all_companies
 
 """
-    Database
-"""
-
-Base.metadata.create_all(bind=ENGINE)
-
-'''
     Logs
-'''
+"""
 
 sentry_sdk.init(
     "https://f92f148c75904f54afa9589ad75e6dc2@o421890.ingest.sentry.io/5731692",
