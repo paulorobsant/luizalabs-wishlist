@@ -54,3 +54,9 @@ class UserProfile(DBModelMixin):
     user = relationship("User", foreign_keys=[user_id])
 
     data = Column(JSONB, nullable=True)
+
+
+class UserInvite(DBModelMixin):
+    email = Column(String(128), nullable=False)
+    expiration_date = Column(DateTime, nullable=False)
+    code = Column(String(512), nullable=False)
