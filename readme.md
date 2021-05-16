@@ -17,7 +17,10 @@ alembic upgrade head
 
 ## Run Automatic Tasks
 
-##### Run worker
 ```
-celery -A worker --beat --app=tasks --loglevel=info
+celery -A periodic beat --loglevel=info
+```
+
+```
+celery -A periodic worker --loglevel=info -E -Q QUEUE_RECOMMENDATIONS
 ```
