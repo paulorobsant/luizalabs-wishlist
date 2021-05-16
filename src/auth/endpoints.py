@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+import jwt
 from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
@@ -20,12 +21,27 @@ router = APIRouter()
 @router.post("/register", response_model=user_schemas.UserRead)
 def register(*, entry: schemas.UserRegister, db: Session = Depends(get_db)):
     db_user = user_services.get_user_by_email(db, email=entry.email)
+    is_valid_to_register = True
 
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    email_suffix = get_email_suffix(email=entry.email)
-    db_company = company_services.get_company_by_email_suffix(db=db, email_suffix=email_suffix)
+    if entry.code:
+        user_invitation = user_services.get_user_invitation_by_code(db=db, code=entry.code)
+
+        if not user_invitation:
+            raise HTTPException(status_code=400,
+                                detail="It was not possible to register. Your code invitation is not valid.")
+
+        if user_invitation and user_invitation.email != entry.email:
+            raise HTTPException(status_code=400,
+                                detail="It was not possible to register. Your email is not valid.")
+
+    # Decode the JWT token
+    code_sub = jwt.decode(jwt=entry.code, key=str(settings.SECRET_KEY), algorithms=[settings.ALGORITHM])
+
+    db_company = company_services.get_company_by_id(db=db, id=code_sub.get('company_id')) if entry.code \
+        else company_services.get_company_by_email_suffix(db=db, email_suffix=get_email_suffix(email=entry.email))
 
     if not db_company:
         raise HTTPException(status_code=400, detail="It was not possible to register. Your company is not part of our "
@@ -79,3 +95,8 @@ def login_access_token(
         "access_token": security.create_access_token(user.id, expires_delta=access_token_expires),
         "token_type": "Bearer",
     }
+
+
+@router.post("/create_invitation", response_model=schemas.Token)
+def create_invitation(*, email: str, company_id: str, db: Session = Depends(get_db)):
+    return user_services.create_invitation(db=db, email=email, company_id=company_id)

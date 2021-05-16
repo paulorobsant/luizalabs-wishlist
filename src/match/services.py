@@ -1,4 +1,5 @@
 import datetime as datetime
+from typing import List
 
 import pandas as pd
 import numpy as np
@@ -9,6 +10,7 @@ from core.utils import from_schema_to_model
 from match import models
 from match.classification.classifier import load_model, create_model, save_model
 from match.classification.utils import must_retrain_the_model, create_challenges_request
+from match.models import Match
 from match.schemas import MatchRequestInDB, MatchInDB, MatchScheduleCreate, MatchReplaceGuest, MatchTermCreate, \
     MatchRequestUpdate, MatchUpdate, MatchTermUpdate
 from user import models as user_models
@@ -70,9 +72,12 @@ def get_top_priorities(db: Session, n=10):
         .all()
 
 
-def get_top_48h_priorities(db: Session, n=10):
+def get_latest_updated_connections(db: Session, n=10, hours=24) -> List[Match]:
+    since = datetime.datetime.now() - datetime.timedelta(hours=hours)
+
     return db.query(models.Match) \
-        .order_by(models.MatchRequest.priority.desc()) \
+        .filter(models.Match.start_datetime < since) \
+        .order_by(models.Match.updated_at.desc()) \
         .limit(n) \
         .all()
 

@@ -3,12 +3,16 @@ from core.database.session import Session
 
 
 def get_company_by_email_suffix(db: Session, email_suffix: str):
-    return db.query(models.Company).filter(models.Company.email_suffix == email_suffix).first()
+    return db.query(models.Company).filter(models.Company.email_suffixes.any(email_suffix)).first()
+
+
+def get_company_by_id(db: Session, id: str):
+    return db.query(models.Company).filter(models.Company.id == id).first()
 
 
 def create_company(db: Session, entry: schemas.CompanyCreate):
     new_entry = models.Company(
-        email_suffix=entry.email_suffix,
+        email_suffixes=[entry.email_suffix],
         name=entry.name,
     )
 

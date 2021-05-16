@@ -69,6 +69,7 @@ class Match(DBModelMixin):
     learner = relationship("User", foreign_keys=[learner_id])
 
     is_approved = Column(Boolean, nullable=False, default=False)
+    data = Column(JSONB, nullable=False)
 
 
 class MatchTerm(DBModelMixin):
@@ -79,16 +80,6 @@ class MatchTerm(DBModelMixin):
     value = Column(Integer(), unique=True)
 
     is_approved = Column(Boolean, nullable=False, default=False)
-
-
-class MatchCluster(DBModelMixin):
-    __tablename__ = "match_cluster"
-    __table_args__ = {"schema": "public", "extend_existing": True}
-
-    value = Column(Integer(), nullable=False, index=True)
-
-    user_id = Column(UUID(as_uuid=True), ForeignKey("public.user.id"))
-    user = relationship("User", foreign_keys=[user_id])
 
 
 class MatchTraining(DBModelMixin):

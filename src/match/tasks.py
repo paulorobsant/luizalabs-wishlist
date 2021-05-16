@@ -1,4 +1,5 @@
 import logging
+import user.services as user_services
 
 from sqlalchemy import literal
 from datetime import timedelta
@@ -16,53 +17,54 @@ LOGGER = logging.getLogger()
 
 
 @app.task(name=settings.TASK_ALERT_CONNECTION)
-def process_alert_connections(conn_id: str):
+def process_alert_connections():
+    """
+    This function is responsible for sending notifications regarding connections.
+    """
     try:
-        db_session = Session()
-        connection = services.get_connection_by_id(db=db_session, conn_id=conn_id)
+        session = Session()
+        connections = services.get_latest_updated_connections(db=session, n=10, hours=24)
 
-        if connection.status == MatchStep.MENTOR_SUGGEST_SCHEDULING:
-            emails.send_mentor_date_suggestion_email(
-                email_to='',
-                learner_name='',
-                mentor_name='',
-                challenge=''
-            )
+        for connection in connections:
+            mentor = user_services.get_user_by_id(db=session, id=connection.mentor_id)
+            learner = user_services.get_user_by_id(db=session, id=connection.learner_id)
 
-        elif connection.status == MatchStep.LEARNER_CONFIRM_SCHEDULING:
-            emails.send_connection_scheduled_email(
-                email_to='',
-                target_conn_name='',
-                other_conn_name='',
-                challenge='',
-                start_datetime=''
-            )
+            if connection.status == MatchStep.MENTOR_SUGGEST_SCHEDULING:
+                emails.send_mentor_date_suggestion_email(
+                    email_to=learner.email,
+                    learner_name=learner.name,
+                    challenge=connection.data["keyword"],
+                    date=str(connection.start_datetime.date()),
+                    time=str(connection.start_datetime.time()),
+                )
 
-        elif connection.status == MatchStep.LEARNER_SUGGEST_SCHEDULING:
-            emails.send_learner_date_suggestion_email(
-                email_to='',
-                learner_name='',
-                mentor_name='',
-                challenge=''
-            )
+            elif connection.status == MatchStep.LEARNER_SUGGEST_SCHEDULING:
+                emails.send_learner_date_suggestion_email(
+                    email_to=mentor.email,
+                    mentor_name=mentor.name,
+                    challenge=connection.data["keyword"],
+                    date=str(connection.start_datetime.date()),
+                    time=str(connection.start_datetime.time()),
+                )
 
-        elif connection.status == MatchStep.MENTOR_CONFIRM_SCHEDULING:
-            emails.send_connection_scheduled_email(
-                email_to='',
-                target_conn_name='',
-                other_conn_name='',
-                challenge='',
-                start_datetime=''
-            )
+            elif connection.status == MatchStep.SCHEDULING_CONFIRMED:
+                emails.send_connection_scheduled_email(
+                    email_to=mentor.email,
+                    name=mentor.name,
+                    challenge=connection.data["keyword"],
+                    date=str(connection.start_datetime.date()),
+                    time=str(connection.start_datetime.time()),
+                    is_mentor=True
+                )
 
-        elif connection.status == MatchStep.SCHEDULING_CONFIRMED:
-            emails.send_connection_remember_email(
-                email_to='',
-                learner_name='',
-                mentor_name='',
-                challenge=''
-            )
-            pass
+                emails.send_connection_scheduled_email(
+                    email_to=learner.email,
+                    name=learner.name,
+                    challenge=connection.data["keyword"],
+                    date=str(connection.start_datetime.date()),
+                    time=str(connection.start_datetime.time()),
+                    is_mentor=False
+                )
 
     except Exception as e:
         LOGGER.exception(e)
@@ -138,6 +140,3 @@ def get_recommended_users():
                 break
     except Exception as e:
         LOGGER.exception(e)
-
-
-get_recommended_users()

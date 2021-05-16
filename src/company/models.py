@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
 
 from core.database.models import DBModelMixin
@@ -14,7 +14,7 @@ class Company(DBModelMixin):
     __table_args__ = {"schema": "public", "extend_existing": True}
 
     name = Column(String(128), nullable=False)
-    email_suffix = Column(String(128), nullable=False)
+    email_suffixes = Column(ARRAY(String), nullable=False)
 
 
 class UserCompany(DBModelMixin):

@@ -56,7 +56,10 @@ class UserProfile(DBModelMixin):
     data = Column(JSONB, nullable=True)
 
 
-class UserInvite(DBModelMixin):
+class UserInvitation(DBModelMixin):
+    __tablename__ = "user_invitation"
+    __table_args__ = {"schema": "public", "extend_existing": True}
+
     email = Column(String(128), nullable=False)
     expiration_date = Column(DateTime, nullable=False)
     code = Column(String(512), nullable=False)

@@ -34,11 +34,11 @@ class AuthenticatedUserUpdate(BaseModel):
 
 
 class UserRegister(BaseModel):
-    email: EmailStr = None
-    username: str = None
-    name: str = None
+    email: EmailStr
+    username: str
+    name: str
     password: str
-    role_id: int = None
+    code: str = None
 
 
 class AuthLinkedin(BaseModel):
