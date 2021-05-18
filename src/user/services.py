@@ -2,7 +2,6 @@ import datetime
 
 from core.database.session import Session
 from core.security import get_password_hash, create_access_token
-from core.utils import random_string
 from user import models, schemas
 from user.models import User
 

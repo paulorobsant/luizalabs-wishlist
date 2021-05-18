@@ -1,4 +1,5 @@
 {% extends "emails/base_template.html" %}
+{% from "components/primary_button.html" import primary_button with context %}
 
 {% block content %}
     <p>
@@ -10,12 +11,14 @@
     </p>
 
     <p>
-        E ai, você aceita esse desafio? Se sim, clique no botão abaixo para recomendar os melhores dias e horários.
+        E ai, você aceita esse desafio? Se sim, clique no endereço abaixo para recomendar os melhores dias e horários.
     </p>
 
-    <button>Iniciar conexão!</button>
+    <p style="text-align: center;">
+        {{connection_url}}
+    </p>
 
     <p>
-        Saudações,<strong>Helena.</strong>
+        Atenciosamente, <strong>Helena.</strong>
     </p>
 {% endblock %}

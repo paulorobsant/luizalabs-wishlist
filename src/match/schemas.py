@@ -47,6 +47,8 @@ class MatchInDB(BaseModel):
     end_datetime: Any
     status: Any
     current_step: Any
+    data: Any
+    is_approved: bool
 
 
 class MatchUpdate(BaseModel):

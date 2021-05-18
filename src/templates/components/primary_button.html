@@ -1,0 +1,11 @@
+{% macro primary_button(link, label) -%}
+  <a href={{link}} style="
+    padding: 10px 25px;
+    background-color: #EB1349;
+    cursor: pointer;
+    color: #fff;
+    font-weight: bold;"
+  >
+      {{label}}
+  </a>
+{%- endmacro %}

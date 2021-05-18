@@ -49,7 +49,7 @@ def send_connection_requested_email(email_to: str, name: str, challenge: str):
     )
 
 
-def send_connection_mentor_invite_email(email_to: str, name: str, challenge: str):
+def send_connection_mentor_invite_email(email_to: str, name: str, challenge: str, connection_url: str):
     project_name = settings.PROJECT_NAME
     subject = f"{project_name} - Você foi convidado para ser um mentor."
 
@@ -59,7 +59,8 @@ def send_connection_mentor_invite_email(email_to: str, name: str, challenge: str
         html_template='/emails/conn_mentor_invite.html',
         environment={
             "name": name,
-            "challenge": challenge
+            "challenge": challenge,
+            "connection_url": connection_url
         },
     )
 
@@ -83,14 +84,13 @@ def send_mentor_date_suggestion_email(email_to: str, learner_name: str, challeng
 
 def send_learner_date_suggestion_email(email_to: str, mentor_name: str, challenge: str, date: str, time: str):
     project_name = settings.PROJECT_NAME
-    subject = f"{project_name} - O seu mentor sugeriu uma data para conexão."
+    subject = f"{project_name} - O seu mentorando sugeriu uma nova data para a conexão."
 
     send_email(
         email_to=email_to,
         subject_template=subject,
         html_template='/emails/conn_learner_date_suggestion.html',
         environment={
-            "learner_name": learner_name,
             "mentor_name": mentor_name,
             "challenge": challenge,
             "date": date,

@@ -17,11 +17,11 @@ app.conf.beat_schedule = {
         "schedule": 10.0,
         "options": {"queue": settings.QUEUE_RECOMMENDATIONS}
     },
-    # f"{settings.TASK_RECOMMENDATION_FIND_CONNECTION_FOR_OVERFLOWED}-every-2-minutes": {
-    #     "task": settings.TASK_RECOMMENDATION_FIND_CONNECTION,
-    #     "schedule": crontab(minute=2)
-    # }
+    f"{settings.TASK_ALERT_CONNECTION}-every-1-minute": {
+        "task": settings.TASK_ALERT_CONNECTION,
+        "schedule": 10.0,
+        "options": {"queue": settings.QUEUE_EMAILS}
+    },
 }
 
 app.conf.timezone = "UTC"
-app.control.add_consumer(settings.QUEUE_RECOMMENDATIONS, reply=True)

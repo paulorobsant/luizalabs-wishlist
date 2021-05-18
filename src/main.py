@@ -5,6 +5,8 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 import settings
+from core.database.session import Session
+from match.services import get_latest_updated_connections
 from router import router
 from seeds.input_companies import add_all_companies
 from seeds.input_terms import add_all_terms
@@ -50,10 +52,12 @@ app.add_middleware(
 app.include_router(router, prefix=settings.API_STR)
 
 if __name__ == "__main__":
-    add_all_terms()
-    add_all_companies()
+    # add_all_terms()
+    # add_all_companies()
+    #
+    # if settings.ENV_NAME == 'local':
+    #     add_all_users(n=20)
 
-    if settings.ENV_NAME == 'local':
-        add_all_users(n=20)
+    connections = get_latest_updated_connections(db=Session(), n=10, hours=24)
 
     uvicorn.run(app, host=settings.SERVER_HOST, port=settings.SERVER_PORT)

@@ -1,0 +1,24 @@
+{% extends "emails/base_template.html" %}
+
+
+{% block content %}
+    <p>
+        Olá, <strong>{{mentor_name}}</strong>! Como você está?
+    </p>
+
+    <p>
+        O seu mentorando acabou de sugerir uma nova data para sua conexão. Para aceitar ou recusar a nova data, clique no botão abaixo.
+    </p>
+
+    <p>
+        <button>Acessar a conexão</button>
+    </p>
+
+    <p>
+        <strong>Caso você não responda esse e-mail em até 48 horas, sua conexão será cancelada automaticamente.</strong>
+    </p>
+
+    <p>
+        Atenciosamente, <strong>Helena.</strong>
+    </p>
+{% endblock %}
