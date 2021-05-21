@@ -15,7 +15,7 @@ services:
 
   prod_celery:
     build:
-      context: ./celery/Dockerfile
+      context: ./
       dockerfile: ./celery/Dockerfile
     image: "global_touch/app:prod"
     restart: unless-stopped
