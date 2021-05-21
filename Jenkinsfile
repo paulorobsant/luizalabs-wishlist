@@ -22,8 +22,8 @@ pipeline {
             stages {
                 stage('Building production image') {
                     steps {
-                        sh "docker-compose build -f ./deploy/docker-compose.yml --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} prod_app"
-                        sh "docker-compose build -f ./deploy/docker-compose.yml --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} prod_celery"
+                        sh "docker-compose -f ./deploy/docker-compose.yml build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} prod_app"
+                        sh "docker-compose -f ./deploy/docker-compose.yml build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} prod_celery"
                     }
                 }
 
