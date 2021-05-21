@@ -7,6 +7,12 @@ pipeline {
                 slackSend (color: '#DF6B00', message: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
             }
         }
+
+        stage('Building the base image') {
+            steps {
+                sh "docker build -t global_touch/base -f ./deploy/Dockerfile ."
+            }
+        }
         
         stage('Deploying production') {
             when {
@@ -16,33 +22,13 @@ pipeline {
             stages {
                 stage('Building production image') {
                     steps {
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} prod_app"
+                        sh "docker-compose build -f ./deploy/docker-compose.yml --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} prod_app"
                     }
                 }
                 
                 stage('Running the production service') {
                     steps {
-                        sh 'docker-compose up -d --no-deps prod_app'
-                    }
-                }
-            }
-        }
-        
-        stage('Deploying staging') {
-            when { 
-                expression { env.GIT_BRANCH == 'origin/master' }
-            }
-            
-            stages {
-                stage('Building the staging image') {
-                    steps {
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} stag_app"
-                    }
-                }
-                
-                stage('Running the staging service') {
-                    steps {
-                        sh 'docker-compose up -d --no-deps stag_app'
+                        sh 'docker-compose up -d -f ./deploy/docker-compose.yml --no-deps prod_app'
                     }
                 }
             }
