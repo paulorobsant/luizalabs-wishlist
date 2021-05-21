@@ -59,6 +59,8 @@ class Match(DBModelMixin):
     start_datetime = Column(DateTime, nullable=False)
     end_datetime = Column(DateTime, nullable=False)
 
+    latest_alert = Column(DateTime)
+
     status = Column(ENUM(MatchStatus), nullable=False)
     current_step = Column(ENUM(MatchStep), nullable=False)
 

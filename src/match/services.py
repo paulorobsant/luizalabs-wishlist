@@ -2,7 +2,7 @@ import datetime as datetime
 from typing import List
 
 import pandas as pd
-import numpy as np
+from sqlalchemy import text
 
 from core.database.session import Session
 from core.errors.exceptions import MatchNotFoundError, MatchTermNotFoundError
@@ -73,13 +73,9 @@ def get_top_priorities(db: Session, n=10):
 
 
 def get_latest_updated_connections(db: Session, n=10, hours=24) -> List[Match]:
-    since = datetime.datetime.now() - datetime.timedelta(hours=hours)
-
-    return db.query(models.Match) \
-        .filter(models.Match.start_datetime < since) \
-        .order_by(models.Match.updated_at.desc()) \
-        .limit(n) \
-        .all()
+    return db.query(models.Match).from_statement(
+        text("SELECT ma.id as id FROM public.match as ma LIMIT :limit")
+    ).params(hours=hours, limit=n).all()
 
 
 """

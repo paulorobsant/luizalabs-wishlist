@@ -1,0 +1,59 @@
+version: "3.5"
+
+services:
+  prod_app:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    image: "global_touch/app:prod"
+    restart: unless-stopped
+    container_name: app-prod
+    ports:
+     - "8001:8001"
+    networks:
+      - network
+
+  prod_celery:
+    build:
+      context: ./celery/Dockerfile
+      dockerfile: ./celery/Dockerfile
+    image: "global_touch/app:prod"
+    restart: unless-stopped
+    container_name: celery-prod
+    ports:
+     - "8001:8001"
+    depends_on:
+      - rabbit
+    networks:
+      - network
+
+  rabbit:
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      timeout: 5s
+      retries: 5
+    image: "rabbitmq:3-management"
+    networks:
+      - network
+    ports:
+      # The standard AMQP protocol port
+      - "5672:5672"
+      # HTTP management UI
+      - "15672:15672"
+
+  mailhog:
+    image: mailhog/mailhog
+    logging:
+      driver: "none"  # Disable saving logs
+    networks:
+      - network
+    ports:
+      # SMTP Server
+      - 1025:1025
+      # Web UI
+      - 8025:8025
+
+networks:
+  network:
+    external: 
+      name: globaltouch-network
