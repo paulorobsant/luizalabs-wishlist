@@ -10,7 +10,7 @@ pipeline {
 
         stage('Building the base image') {
             steps {
-                sh "docker build -t global_touch/base -f ."
+                sh "docker build -t global_touch/base ."
             }
         }
 
