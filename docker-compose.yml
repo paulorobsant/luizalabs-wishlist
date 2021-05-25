@@ -31,7 +31,7 @@ services:
       dockerfile: Dockerfile
     image: "global_touch/app:worker"
     restart: unless-stopped
-    command: [celery, -A, periodic, worker, --loglevel=INFO, --queues=QUEUE_RECOMMENDATION]
+    command: [celery, -A, periodic, worker, --loglevel=INFO, --queues="QUEUE_RECOMMENDATIONS, QUEUE_EMAILS"]
     container_name: celery_worker_prod
     networks:
       - globaltouch
