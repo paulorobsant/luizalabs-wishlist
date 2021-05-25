@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     image: "global_touch/app:server"
     restart: unless-stopped
-    command: [python3, main.py]
+    entrypoint: ["bash","entrypoint.sh"]
     container_name: app_prod
     ports:
       - "8001:8001"

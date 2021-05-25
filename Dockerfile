@@ -7,6 +7,6 @@ WORKDIR app
 COPY /src /app
 COPY /environments/.env.production /app/.env
 COPY /requirements.txt /app/requirements.txt
+COPY /entrypoint.sh /app/entrypoint.sh
 
 RUN pip install -r ./requirements.txt
-
