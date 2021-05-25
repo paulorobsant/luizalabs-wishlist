@@ -22,15 +22,17 @@ pipeline {
             stages {
                 stage('Building production image') {
                     steps {
-                        sh "docker-compose -f ./deploy/docker-compose.yml build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} prod_app"
-                        sh "docker-compose -f ./deploy/docker-compose.yml build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} prod_celery"
+                        sh "docker-compose -f ./deploy/docker-compose.yml build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} app"
+                        sh "docker-compose -f ./deploy/docker-compose.yml build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} beat"
+                        sh "docker-compose -f ./deploy/docker-compose.yml build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} worker"
                     }
                 }
 
                 stage('Running the production service') {
                     steps {
-                        sh "docker-compose up -d -f ./deploy/docker-compose.yml --no-deps prod_app"
-                        sh "docker-compose up -d -f ./deploy/docker-compose.yml --no-deps prod_celery"
+                        sh "docker-compose -f ./deploy/docker-compose.yml up -d --no-deps app"
+                        sh "docker-compose -f ./deploy/docker-compose.yml up -d --no-deps beat"
+                        sh "docker-compose -f ./deploy/docker-compose.yml up -d --no-deps worker"
                     }
                 }
             }

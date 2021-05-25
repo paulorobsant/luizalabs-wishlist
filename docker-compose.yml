@@ -1,0 +1,67 @@
+version: "3.5"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "global_touch/app:server"
+    restart: unless-stopped
+    command: [python3, main.py]
+    container_name: app_prod
+    ports:
+      - "8001:8001"
+    networks:
+      - globaltouch
+
+  beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "global_touch/app:beat"
+    restart: unless-stopped
+    command: [celery, -A, periodic, beat, --loglevel=INFO]
+    container_name: celery_beat_prod
+    networks:
+      - globaltouch
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "global_touch/app:worker"
+    restart: unless-stopped
+    command: [celery, -A, periodic, worker, --loglevel=INFO, --queues=QUEUE_RECOMMENDATION]
+    container_name: celery_worker_prod
+    networks:
+      - globaltouch
+
+  rabbit:
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      timeout: 5s
+      retries: 5
+    image: "rabbitmq:3-management"
+    networks:
+      - globaltouch
+    ports:
+      # The standard AMQP protocol port
+      - "5672:5672"
+      # HTTP management UI
+      - "15672:15672"
+
+  mailhog:
+    image: mailhog/mailhog
+    logging:
+      driver: "none"  # Disable saving logs
+    networks:
+      - globaltouch
+    ports:
+      # SMTP Server
+      - "1025:1025"
+      # Web UI
+      - "8025:8025"
+
+networks:
+  globaltouch:
+    external: true
