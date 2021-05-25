@@ -1,8 +1,5 @@
 from __future__ import absolute_import
-
 from celery import Celery
-# from celery.schedules import crontab
-
 import settings
 
 # Define the app initialization
