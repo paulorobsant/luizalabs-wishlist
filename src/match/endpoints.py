@@ -16,12 +16,11 @@ router = APIRouter()
 
 # Terms
 
-@router.get("/terms/", response_model=List[schemas.MatchTermRead])
+@router.get("/terms/")
 def read_all_terms(*, search: str = None, db: Session = Depends(get_db)):
     try:
         all_terms = services.get_all_terms(db, search_sentence=search)
-
-        return JSONResponse(status_code=200, content={"data": json.dumps(all_terms)})
+        return all_terms
     except Error as e:
         raise HTTPException(status_code=400, detail=e.message)
 
