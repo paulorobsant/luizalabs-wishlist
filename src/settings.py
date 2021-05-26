@@ -1,3 +1,4 @@
+import datetime
 import os
 
 from dotenv import load_dotenv
@@ -112,6 +113,13 @@ QUEUE_OVERFLOWED_CONNECTIONS = 'QUEUE_OVERFLOWED_CONNECTIONS'
 TASK_RECOMMENDATION_FIND_CONNECTION = "recommendation.tasks.find_connection"
 TASK_RECOMMENDATION_FIND_CONNECTION_FOR_OVERFLOWED = "recommendation.tasks.find_connection_overflowed"
 TASK_ALERT_CONNECTION = "recommendation.tasks.alert_connection"
+
+"""
+    Celery Schedule
+"""
+
+SCHEDULE_RECOMMENDATION_FIND_CONNECTION = float(os.getenv("SCHEDULE_RECOMMENDATION_FIND_CONNECTION", 10))
+SCHEDULE_TASK_ALERT_CONNECTION = float(os.getenv("SCHEDULE_TASK_ALERT_CONNECTION", 10))
 
 """
     Recommendations Settings
