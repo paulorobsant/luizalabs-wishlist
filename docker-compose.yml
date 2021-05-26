@@ -2,10 +2,7 @@ version: "3.5"
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: "global_touch/app:server"
+    image: "global_touch/base:latest"
     restart: unless-stopped
     entrypoint: ["bash","entrypoint.sh"]
     container_name: app_prod
@@ -15,10 +12,7 @@ services:
       - globaltouch
 
   beat:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: "global_touch/app:beat"
+    image: "global_touch/base:latest"
     restart: unless-stopped
     command: [celery, -A, periodic, beat, --loglevel=INFO]
     container_name: celery_beat_prod
@@ -26,12 +20,9 @@ services:
       - globaltouch
 
   worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: "global_touch/app:worker"
+    image: "global_touch/base:latest"
     restart: unless-stopped
-    command: [celery, -A, periodic, worker, --loglevel=INFO, --queues="QUEUE_RECOMMENDATIONS, QUEUE_EMAILS"]
+    command: [celery, -A, periodic, worker, --loglevel=INFO, --queues=QUEUE_RECOMMENDATIONS, --queues=QUEUE_EMAILS]
     container_name: celery_worker_prod
     networks:
       - globaltouch
