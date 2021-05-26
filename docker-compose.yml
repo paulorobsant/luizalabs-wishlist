@@ -12,17 +12,23 @@ services:
       - globaltouch
 
   beat:
-    image: "global_touch/base:latest"
+    build:
+      context: .
+      dockerfile: ./deploy/celery_beat/Dockerfile
+    image: "global_touch/beat:latest"
     restart: unless-stopped
-    command: [celery, -A, periodic, beat, --loglevel=INFO]
+    command: [supervisord, -c, supervisord.conf]
     container_name: celery_beat_prod
     networks:
       - globaltouch
 
   worker:
-    image: "global_touch/base:latest"
+    build:
+      context: .
+      dockerfile: ./deploy/celery_worker/Dockerfile
+    image: "global_touch/worker:latest"
     restart: unless-stopped
-    command: [celery, -A, periodic, worker, --loglevel=INFO, --queues=QUEUE_RECOMMENDATIONS, --queues=QUEUE_EMAILS]
+    command: [supervisord, -c, supervisord.conf]
     container_name: celery_worker_prod
     networks:
       - globaltouch
