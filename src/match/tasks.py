@@ -1,6 +1,7 @@
 import logging
 from datetime import timedelta
 
+from celery import group
 from sqlalchemy import literal
 
 import settings
@@ -24,34 +25,34 @@ def process_alert_connection(conn_id: str):
     mentor = user_services.get_user_by_id(db=db, id=connection.mentor_id)
     learner = user_services.get_user_by_id(db=db, id=connection.learner_id)
 
-    print(f"ID: {connection.id} - Status: {connection.status}")
+    print(f"ID: {connection.id} - Status: {connection.status} - Current Step: {connection.current_step}")
 
-    if connection.status == MatchStep.MENTOR_SUGGEST_SCHEDULING:
+    if connection.current_step == MatchStep.MENTOR_SUGGEST_SCHEDULING:
         print('MatchStep.MENTOR_SUGGEST_SCHEDULING')
         emails.send_mentor_date_suggestion_email(
             email_to=learner.email,
             learner_name=learner.name,
-            challenge=connection.data["keyword"],
+            challenge=connection.data.get("keyword"),
             date=str(connection.start_datetime.date()),
             time=str(connection.start_datetime.time()),
         )
 
-    elif connection.status == MatchStep.LEARNER_SUGGEST_SCHEDULING:
+    elif connection.current_step == MatchStep.LEARNER_SUGGEST_SCHEDULING:
         print('MatchStep.LEARNER_SUGGEST_SCHEDULING')
         emails.send_learner_date_suggestion_email(
             email_to=mentor.email,
             mentor_name=mentor.name,
-            challenge=connection.data["keyword"],
+            challenge=connection.data.get("keyword"),
             date=str(connection.start_datetime.date()),
             time=str(connection.start_datetime.time()),
         )
 
-    elif connection.status == MatchStep.SCHEDULING_CONFIRMED:
+    elif connection.current_step == MatchStep.SCHEDULING_CONFIRMED:
         print('MatchStep.SCHEDULING_CONFIRMED')
         emails.send_connection_scheduled_email(
             email_to=mentor.email,
             name=mentor.name,
-            challenge=connection.data["keyword"],
+            challenge=connection.data.get("keyword"),
             date=str(connection.start_datetime.date()),
             time=str(connection.start_datetime.time()),
             is_mentor=True
@@ -60,7 +61,7 @@ def process_alert_connection(conn_id: str):
         emails.send_connection_scheduled_email(
             email_to=learner.email,
             name=learner.name,
-            challenge=connection.data["keyword"],
+            challenge=connection.data.get("keyword"),
             date=str(connection.start_datetime.date()),
             time=str(connection.start_datetime.time()),
             is_mentor=False
@@ -75,11 +76,11 @@ def process_alert_connections():
     try:
         db = Session()
 
-        # TODO: Selecionar apenas o ID
         connections = services.get_latest_updated_connections(db=db, n=10000, hours=24)
 
-        for connection in connections:
-            process_alert_connection.delay(connection.id)
+        tasks = [process_alert_connection.s(connection.id) for connection in connections]
+        results = group(tasks)()
+        print(results.get())
 
     except Exception as e:
         LOGGER.exception(e)

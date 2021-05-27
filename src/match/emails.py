@@ -5,7 +5,7 @@ from email_message.services import send_email
 def send_connection_scheduled_email(email_to: str, name: str, challenge: str,
                                     date: str, time: str, is_mentor=False):
     project_name = settings.PROJECT_NAME
-    subject = f"{project_name} - Your connection has been successfully scheduled"
+    subject = f"{project_name} - Sua conexão foi agendada com sucesso!"
 
     send_email(
         email_to=email_to,
