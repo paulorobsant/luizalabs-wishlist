@@ -149,4 +149,5 @@ def reset_training(*, db: Session = Depends(get_db)):
         services.create_training(db=db)
         return JSONResponse(status_code=200, content={"message": "The model has been successfully reset."})
     except Error as e:
-        raise HTTPException(status_code=400, detail=e.message)
+        raise HTTPException(status_code=400, detail="Oops! Something went wrong. It was not possible to reset the "
+                                                    "training.")
