@@ -2,7 +2,7 @@ import logging
 from datetime import timedelta
 
 from celery import group
-from sqlalchemy import literal
+from sqlalchemy import literal, func
 
 import settings
 from core import utils
@@ -66,6 +66,9 @@ def process_alert_connection(conn_id: str):
             time=str(connection.start_datetime.time()),
             is_mentor=False
         )
+
+    updated_connection = schemas.MatchUpdate(**{"latest_alert": func.now()})
+    services.update_connection(db=db, old_entry=connection, new_entry=updated_connection)
 
 
 @app.task(name=settings.TASK_ALERT_CONNECTION)
