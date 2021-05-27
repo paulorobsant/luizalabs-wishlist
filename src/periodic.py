@@ -1,6 +1,20 @@
 from __future__ import absolute_import
 from celery import Celery
+from celery.signals import task_failure
+
 import settings
+import rollbar
+
+# Error Tracking
+
+rollbar.init("52839cbb5d2b478ca55d8766ce6b47f1", settings.ENV_NAME)
+
+
+def celery_base_data_hook(request, data):
+    data['framework'] = 'celery'
+
+
+rollbar.BASE_DATA_HOOK = celery_base_data_hook
 
 # Define the app initialization
 
@@ -22,3 +36,10 @@ app.conf.beat_schedule = {
 }
 
 app.conf.timezone = "UTC"
+
+
+# Hooks
+
+@task_failure.connect
+def handle_task_failure(**kw):
+    rollbar.report_exc_info(extra_data=kw)
