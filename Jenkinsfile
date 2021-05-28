@@ -14,25 +14,41 @@ pipeline {
             }
         }
 
+        stage('Building all container images') {
+            steps {
+                sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} app"
+                sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} beat"
+                sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} worker"
+            }
+        }
+
+        stage('Deploying staging') {
+            when {
+                expression { env.GIT_BRANCH == 'origin/master' }
+            }
+
+            stages {
+                stage('Running the staging service') {
+                    steps {
+                        sh "docker-compose -p staging up -d --no-deps app"
+                        sh "docker-compose -p staging up -d --no-deps beat"
+                        sh "docker-compose -p staging up -d --no-deps worker"
+                    }
+                }
+            }
+        }
+
         stage('Deploying production') {
             when {
                 expression { env.GIT_BRANCH == 'origin/production' }
             }
 
             stages {
-                stage('Building production image') {
-                    steps {
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} app"
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} beat"
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} worker"
-                    }
-                }
-
                 stage('Running the production service') {
                     steps {
-                        sh "docker-compose up -d --no-deps app"
-                        sh "docker-compose up -d --no-deps beat"
-                        sh "docker-compose up -d --no-deps worker"
+                        sh "docker-compose -p production up -d --no-deps app"
+                        sh "docker-compose -p production up -d --no-deps beat"
+                        sh "docker-compose -p production up -d --no-deps worker"
                     }
                 }
             }
