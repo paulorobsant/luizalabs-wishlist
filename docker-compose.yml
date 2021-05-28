@@ -5,9 +5,9 @@ services:
     image: "global_touch/base:latest"
     restart: unless-stopped
     entrypoint: ["bash","entrypoint.sh"]
-    container_name: app_prod
+    container_name: ${API_CONTAINER_NAME}
     ports:
-      - "8001:8001"
+      - ${SERVER_PORT}:${SERVER_PORT}
     networks:
       - globaltouch
 
@@ -18,7 +18,7 @@ services:
     image: "global_touch/beat:latest"
     restart: unless-stopped
     command: [supervisord, -c, supervisord.conf]
-    container_name: celery_beat_prod
+    container_name: ${BEAT_CONTAINER_NAME}
     networks:
       - globaltouch
 
@@ -29,7 +29,7 @@ services:
     image: "global_touch/worker:latest"
     restart: unless-stopped
     command: [supervisord, -c, supervisord.conf]
-    container_name: celery_worker_prod
+    container_name: ${WORKER_CONTAINER_NAME}
     networks:
       - globaltouch
 
