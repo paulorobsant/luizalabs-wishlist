@@ -7,7 +7,7 @@ from starlette.responses import JSONResponse
 
 from core.database.deps import get_db
 from core.errors.exceptions import MatchNotFoundError, Error
-from core.http_session import get_current_active_user
+from core.http_session import get_current_active_user, get_current_active_superuser
 from match import schemas, services, models, emails
 from user.models import User
 
@@ -25,7 +25,7 @@ def read_all_terms(*, search: str = None, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=e.message)
 
 
-@router.get("/terms/{term_id}", response_model=List[schemas.MatchTermRead])
+@router.get("/terms/{term_id}", response_model=List[schemas.MatchTermRead], dependencies=[Depends(get_current_active_superuser)])
 def approve_term(*, term_id: str, db: Session = Depends(get_db)):
     try:
         services.approve_term(db, term_id=term_id)
@@ -132,7 +132,7 @@ def read_my_all_connections(*, current_user: User = Depends(get_current_active_u
         raise HTTPException(status_code=400, detail=e.message)
 
 
-@router.get("/approve_conn/{conn_id}", description="Approves a connection recommended by the AI")
+@router.get("/approve_conn/{conn_id}", description="Approves a connection recommended by the AI", dependencies=[Depends(get_current_active_superuser)])
 def approve_connection(*, conn_id: str, db: Session = Depends(get_db)):
     try:
         services.approve_connection(db=db, conn_id=conn_id)
@@ -143,7 +143,7 @@ def approve_connection(*, conn_id: str, db: Session = Depends(get_db)):
 
 # Machine Learning
 
-@router.get("/reset_training/")
+@router.get("/reset_training/", dependencies=[Depends(get_current_active_superuser)])
 def reset_training(*, db: Session = Depends(get_db)):
     try:
         services.create_training(db=db)

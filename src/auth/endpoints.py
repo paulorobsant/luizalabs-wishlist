@@ -13,6 +13,7 @@ from company.utils import get_email_suffix
 from core import security
 from core.database.deps import get_db
 from core.database.session import Session
+from core.http_session import get_current_active_superuser
 from user import services as user_services, schemas as user_schemas
 
 router = APIRouter()
@@ -97,6 +98,6 @@ def login_access_token(
     }
 
 
-@router.post("/create_invitation", response_model=schemas.Token)
+@router.post("/create_invitation", response_model=schemas.Token, dependencies=[Depends(get_current_active_superuser)])
 def create_invitation(*, email: str, company_id: str, db: Session = Depends(get_db)):
     return user_services.create_invitation(db=db, email=email, company_id=company_id)
