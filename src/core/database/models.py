@@ -28,7 +28,3 @@ class LogModelMixin(Base, DBSerializerMixin):
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     description = Column(String(1024), nullable=True)
-
-    @declared_attr
-    def owner_id(self):
-        return Column(UUID(as_uuid=True), ForeignKey("public.user.id"))

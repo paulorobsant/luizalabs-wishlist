@@ -3,19 +3,7 @@ import enum
 from sqlalchemy import Column, Boolean, Integer, ForeignKey, String
 from sqlalchemy.dialects.postgresql import ENUM, UUID
 
-from core.database.models import LogModelMixin, DBModelMixin
-
-"""
-    Logs
-"""
-
-
-class AuthLoginAttemptsLog(LogModelMixin):
-    __tablename__ = "auth_login_attempts_log"
-    __table_args__ = {"schema": "logs", "extend_existing": True}
-
-    email_or_username = Column(String(512), nullable=True)
-
+from core.database.models import DBModelMixin
 
 """
     Entities

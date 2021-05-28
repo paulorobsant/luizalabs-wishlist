@@ -2,13 +2,13 @@ from core.database.session import Session
 from core.security import get_password_hash
 from core.security import verify_password
 from auth import schemas
-from auth.models import Token, AuthLoginAttemptsLog
+from auth.models import Token
 from fastapi import Request
-from user.models import User
+from user.models import User, UserLoginAttemptsLog
 
 
 def save_login_attempt(db: Session, request: Request, email_or_username: str, description):
-    login_attempt = AuthLoginAttemptsLog(
+    login_attempt = UserLoginAttemptsLog(
         browser_info=request.headers.get("user-agent"),
         client_ip_address=request.client.host,
         client_name=None,

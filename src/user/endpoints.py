@@ -4,6 +4,7 @@ from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 
 from core.database.deps import get_db
+from core.http_session import get_current_active_superuser
 from user import schemas, services
 
 router = APIRouter()
@@ -11,7 +12,7 @@ router = APIRouter()
 
 # User
 
-@router.post("/", response_model=schemas.UserRead)
+@router.post("/", response_model=schemas.UserRead, dependencies=[Depends(get_current_active_superuser)])
 def create_user(*, entry: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = services.get_user_by_email(db, email=entry.email)
 
@@ -21,13 +22,13 @@ def create_user(*, entry: schemas.UserCreate, db: Session = Depends(get_db)):
     return services.create_user(db=db, user=entry)
 
 
-@router.get("/", response_model=List[schemas.UserRead])
+@router.get("/", response_model=List[schemas.UserRead], dependencies=[Depends(get_current_active_superuser)])
 def read_all_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = services.get_all_users(db, skip=skip, limit=limit)
     return users
 
 
-@router.get("/{user_id}", response_model=schemas.UserRead)
+@router.get("/{user_id}", response_model=schemas.UserRead, dependencies=[Depends(get_current_active_superuser)])
 def read_user(user_id: str, db: Session = Depends(get_db)):
     db_user = services.get_user_by_id(db, id=user_id)
 
@@ -39,7 +40,7 @@ def read_user(user_id: str, db: Session = Depends(get_db)):
 
 # User Profile
 
-@router.post("/{user_id}/profile/", response_model=schemas.UserProfileRead)
+@router.post("/{user_id}/profile/", response_model=schemas.UserProfileRead, dependencies=[Depends(get_current_active_superuser)])
 def create_user_profile(*, user_id: str, entry: schemas.UserProfileCreate, db: Session = Depends(get_db)):
     db_user_profile = services.get_user_profile_by_user_id(db, user_id=user_id)
 
@@ -49,7 +50,7 @@ def create_user_profile(*, user_id: str, entry: schemas.UserProfileCreate, db: S
     return services.create_user_profile(db=db, user_id=user_id, entry=entry)
 
 
-@router.get("/{user_id}/profile/", response_model=schemas.UserProfileRead)
+@router.get("/{user_id}/profile/", response_model=schemas.UserProfileRead, dependencies=[Depends(get_current_active_superuser)])
 def read_user_profile(user_id: str, db: Session = Depends(get_db)):
     db_user_profile = services.get_user_profile_by_user_id(db, user_id=user_id)
 
