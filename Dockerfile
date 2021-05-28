@@ -5,7 +5,6 @@ FROM python:3.7
 
 WORKDIR /app
 COPY /src /app
-COPY /environments/.env.production /app/.env
 COPY /requirements.txt /app/requirements.txt
 COPY /entrypoint.sh /app/entrypoint.sh
 

@@ -14,20 +14,26 @@ pipeline {
             }
         }
 
-        stage('Building all container images') {
-            steps {
-                sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} app"
-                sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} beat"
-                sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} worker"
-            }
-        }
-
         stage('Deploying staging') {
             when {
                 expression { env.GIT_BRANCH == 'origin/master' }
             }
 
             stages {
+                stage('Building the staging image') {
+                    steps {
+                        sh "docker build -f ./deploy/staging/Dockerfile -t global_touch/staging ."
+                    }
+                }
+
+                stage('Building all container images') {
+                    steps {
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} app"
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} beat"
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} worker"
+                    }
+                }
+
                 stage('Running the staging service') {
                     steps {
                         sh "docker-compose -p staging up -d --no-deps app"
@@ -44,6 +50,20 @@ pipeline {
             }
 
             stages {
+                stage('Building the production image') {
+                    steps {
+                        sh "docker build -f ./deploy/production/Dockerfile -t global_touch/production ."
+                    }
+                }
+
+                stage('Building all container images') {
+                    steps {
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} app"
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} beat"
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} worker"
+                    }
+                }
+
                 stage('Running the production service') {
                     steps {
                         sh "docker-compose -p production up -d --no-deps app"

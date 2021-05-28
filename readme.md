@@ -22,7 +22,7 @@ $ celery -A periodic beat --loglevel=info
 ```
 
 ```
-$ celery -A periodic worker --loglevel=info -E -Q QUEUE_RECOMMENDATIONS
+$ celery -A periodic worker --loglevel=info -E -Q {QUEUE_NAME}
 ```
 
 ## Run Mailhog

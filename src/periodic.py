@@ -23,12 +23,12 @@ app = Celery("periodic", broker=settings.RABBIT_URL, include=["match.tasks"])
 # Define schedule
 
 app.conf.beat_schedule = {
-    f"{settings.TASK_RECOMMENDATION_FIND_CONNECTION}-every-1-minute": {
+    f"{settings.TASK_RECOMMENDATION_FIND_CONNECTION}-every-{settings.SCHEDULE_RECOMMENDATION_FIND_CONNECTION}-milliseconds": {
         "task": settings.TASK_RECOMMENDATION_FIND_CONNECTION,
         "schedule": settings.SCHEDULE_RECOMMENDATION_FIND_CONNECTION,
         "options": {"queue": settings.QUEUE_RECOMMENDATIONS}
     },
-    f"{settings.TASK_ALERT_CONNECTION}-every-1-minute": {
+    f"{settings.TASK_ALERT_CONNECTION}-every-{settings.SCHEDULE_TASK_ALERT_CONNECTION}-milliseconds": {
         "task": settings.TASK_ALERT_CONNECTION,
         "schedule": settings.SCHEDULE_TASK_ALERT_CONNECTION,
         "options": {"queue": settings.QUEUE_EMAILS}

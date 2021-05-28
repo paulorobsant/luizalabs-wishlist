@@ -1,4 +1,3 @@
-import datetime
 import os
 
 from dotenv import load_dotenv
@@ -12,7 +11,7 @@ load_dotenv()
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "be")
 SERVER_HOST = os.getenv("SERVER_HOST", "0.0.0.0")
-SERVER_PORT = os.getenv("SERVER_PORT", 8001)
+SERVER_PORT = int(os.getenv("SERVER_PORT", 8001))
 ENV_NAME = os.getenv("ENV", "local")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -102,9 +101,9 @@ MODEL_DIR = f"{BASE_PATH}/match/classification/"
     Queues
 """
 
-QUEUE_RECOMMENDATIONS = f"QUEUE_RECOMMENDATIONS_{ENV_NAME}"
-QUEUE_EMAILS = f"QUEUE_EMAILS_{ENV_NAME}"
-QUEUE_OVERFLOWED_CONNECTIONS = f"QUEUE_OVERFLOWED_CONNECTIONS_{ENV_NAME}"
+QUEUE_RECOMMENDATIONS = f"queue_recommendations_{ENV_NAME}"
+QUEUE_EMAILS = f"queue_emails_{ENV_NAME}"
+QUEUE_OVERFLOWED_CONNECTIONS = f"queue_overflowed_connections_{ENV_NAME}"
 
 """
     Celery Routes
