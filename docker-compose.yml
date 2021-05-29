@@ -2,10 +2,7 @@ version: "3.5"
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: ./deploy/${ENV}/Dockerfile
-    image: global_touch/app_${ENV}:latest
+    image: global_touch/${ENV}:latest
     restart: unless-stopped
     entrypoint: ["bash","entrypoint.sh"]
     container_name: ${API_CONTAINER_NAME}
