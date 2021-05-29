@@ -22,15 +22,15 @@ pipeline {
             stages {
                 stage('Building the staging image') {
                     steps {
-                        sh "docker build -f ./deploy/staging/Dockerfile -t global_touch/base:staging ."
+                        sh "docker build -f ./deploy/staging/Dockerfile -t global_touch/base:staging:latest ."
                     }
                 }
 
                 stage('Building all container images') {
                     steps {
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=staging app"
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=staging beat"
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=staging worker"
+                        sh "docker-compose build app"
+                        sh "docker-compose build beat"
+                        sh "docker-compose build worker"
                     }
                 }
 
@@ -52,15 +52,15 @@ pipeline {
             stages {
                 stage('Building the production image') {
                     steps {
-                        sh "docker build -f ./deploy/production/Dockerfile -t global_touch/app_production:${env.BUILD_NUMBER} ."
+                        sh "docker build -f ./deploy/production/Dockerfile -t global_touch/app_production:latest ."
                     }
                 }
 
                 stage('Building all container images') {
                     steps {
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=staging app"
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=staging beat"
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=staging worker"
+                        sh "docker-compose build app"
+                        sh "docker-compose build beat"
+                        sh "docker-compose build worker"
                     }
                 }
 
