@@ -5,12 +5,12 @@ from pydantic import BaseModel, EmailStr
 class Token(BaseModel):
     access_token: str
     token_type: Any
-    expires_in: int
-    user_id: int
+    expires_in: int = None
+    user_id: int = None
 
 
 class TokenPayload(BaseModel):
-    sub: Optional[int] = None
+    sub: Optional[str] = None
 
 
 class AuthenticatedUser(BaseModel):
@@ -38,7 +38,7 @@ class UserRegister(BaseModel):
     username: str
     name: str
     password: str
-    code: str = None
+    code: str = ""
 
 
 class AuthLinkedin(BaseModel):

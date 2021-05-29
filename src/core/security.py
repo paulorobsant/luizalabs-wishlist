@@ -20,7 +20,7 @@ def create_access_token(
     to_encode = {"exp": expire, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, str(settings.SECRET_KEY), algorithm=settings.ALGORITHM)
 
-    return str(encoded_jwt)
+    return encoded_jwt
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

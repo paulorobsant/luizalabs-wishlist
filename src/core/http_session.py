@@ -9,7 +9,7 @@ from auth.schemas import TokenPayload
 from core.database.deps import get_db
 from core.database.session import Session
 from user.models import User
-from user.services import get_user_by_email
+from user.services import get_user_by_id
 
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl=f"{settings.API_STR}/login/access_token")
 
@@ -27,7 +27,7 @@ def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    user = get_user_by_email(db=db, email=str(token_data.sub))
+    user = get_user_by_id(db=db, id=str(token_data.sub))
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")

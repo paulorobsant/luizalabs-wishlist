@@ -27,6 +27,8 @@ def register(*, entry: schemas.UserRegister, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    db_company = company_services.get_company_by_email_suffix(db=db, email_suffix=get_email_suffix(email=entry.email))
+
     if entry.code:
         user_invitation = user_services.get_user_invitation_by_code(db=db, code=entry.code)
 
@@ -38,11 +40,11 @@ def register(*, entry: schemas.UserRegister, db: Session = Depends(get_db)):
             raise HTTPException(status_code=400,
                                 detail="It was not possible to register. Your email is not valid.")
 
-    # Decode the JWT token
-    code_sub = jwt.decode(jwt=entry.code, key=str(settings.SECRET_KEY), algorithms=[settings.ALGORITHM])
+        # Decode the JWT token
+        code_sub = jwt.decode(jwt=entry.code, key=str(settings.SECRET_KEY), algorithms=[settings.ALGORITHM])
 
-    db_company = company_services.get_company_by_id(db=db, id=code_sub.get('company_id')) if entry.code \
-        else company_services.get_company_by_email_suffix(db=db, email_suffix=get_email_suffix(email=entry.email))
+        # Find company by ID
+        db_company = company_services.get_company_by_id(db=db, id=code_sub.get('company_id'))
 
     if not db_company:
         raise HTTPException(status_code=400, detail="It was not possible to register. Your company is not part of our "
