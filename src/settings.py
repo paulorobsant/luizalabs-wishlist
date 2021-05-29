@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from starlette.datastructures import CommaSeparatedStrings
 
-load_dotenv()
+load_dotenv('.env')
 
 """
     General

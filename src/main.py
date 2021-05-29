@@ -26,7 +26,7 @@ if __name__ == "__main__":
             Env. Variables
         """
 
-        load_dotenv()
+        load_dotenv('.env')
 
         """
             General
