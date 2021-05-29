@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from core.database.session import Session
 from core.security import get_password_hash, create_access_token
@@ -61,13 +62,13 @@ def create_user_profile(db: Session, user_id: str, entry: schemas.UserProfileCre
 
 def create_invitation(db: Session, email: str, company_id, expires_delta=24):
     expiration_date = datetime.datetime.now() + datetime.timedelta(hours=expires_delta)
-    code = create_access_token(subject={"email": email, "company_id": company_id},
+    code = create_access_token(subject=json.dumps({"company_id": company_id}),
                                expires_delta=datetime.timedelta(hours=expires_delta))
 
     new_entry = models.UserInvitation(
         email=email,
         expiration_date=expiration_date,
-        code=code,
+        code=code.decode("utf-8"),
     )
 
     db.add(new_entry)

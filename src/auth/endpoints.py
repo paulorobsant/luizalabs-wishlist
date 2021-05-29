@@ -1,9 +1,12 @@
+import datetime
+import json
 from datetime import timedelta
 
 import jwt
 from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
+from starlette.responses import JSONResponse
 
 import settings as settings
 from auth import schemas
@@ -36,15 +39,27 @@ def register(*, entry: schemas.UserRegister, db: Session = Depends(get_db)):
             raise HTTPException(status_code=400,
                                 detail="It was not possible to register. Your code invitation is not valid.")
 
-        if user_invitation and user_invitation.email != entry.email:
+        if (user_invitation.expiration_date - datetime.datetime.now()).days > 2:
+            raise HTTPException(status_code=400,
+                                detail="The registration invitation code has expired.")
+
+        if user_invitation.email != entry.email:
             raise HTTPException(status_code=400,
                                 detail="It was not possible to register. Your email is not valid.")
 
         # Decode the JWT token
-        code_sub = jwt.decode(jwt=entry.code, key=str(settings.SECRET_KEY), algorithms=[settings.ALGORITHM])
+        decode = jwt.decode(jwt=entry.code, key=str(settings.SECRET_KEY), algorithms=[settings.ALGORITHM])
+
+        # Convert the sub data
+        sub_data = decode.get("sub")
+        sub_data = json.loads(sub_data)
+
+        if not sub_data["company_id"]:
+            raise HTTPException(status_code=400,
+                                detail="It was not possible to register. Your invitation is not tied to a group.")
 
         # Find company by ID
-        db_company = company_services.get_company_by_id(db=db, id=code_sub.get('company_id'))
+        db_company = company_services.get_company_by_id(db=db, id=sub_data["company_id"])
 
     if not db_company:
         raise HTTPException(status_code=400, detail="It was not possible to register. Your company is not part of our "
@@ -100,6 +115,11 @@ def login_access_token(
     }
 
 
-@router.post("/create_invitation", response_model=schemas.Token, dependencies=[Depends(get_current_active_superuser)])
+@router.post("/create_invitation", dependencies=[Depends(get_current_active_superuser)])
 def create_invitation(*, email: str, company_id: str, db: Session = Depends(get_db)):
-    return user_services.create_invitation(db=db, email=email, company_id=company_id)
+    try:
+        invitation = user_services.create_invitation(db=db, email=email, company_id=company_id)
+        return JSONResponse(status_code=200, content={"message": "The invitation code was successfully generated.",
+                                                      "data": invitation.code})
+    except:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user")
