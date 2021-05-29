@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   app:
-    image: global_touch/${ENV}:latest
+    image: global_touch/api_${ENV}:latest
     restart: unless-stopped
     entrypoint: ["bash","entrypoint.sh"]
     container_name: ${API_CONTAINER_NAME}
