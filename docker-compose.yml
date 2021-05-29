@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   app:
-    image: global_touch/base:${ENV}
+    image: global_touch/app_${ENV}:latest
     restart: unless-stopped
     entrypoint: ["bash","entrypoint.sh"]
     container_name: ${API_CONTAINER_NAME}
@@ -15,7 +15,7 @@ services:
     build:
       context: .
       dockerfile: ./deploy/celery_beat/Dockerfile
-    image: "global_touch/beat:latest"
+    image: global_touch/beat_${ENV}:latest
     restart: unless-stopped
     command: [supervisord, -c, supervisord.conf]
     container_name: ${BEAT_CONTAINER_NAME}
@@ -26,7 +26,7 @@ services:
     build:
       context: .
       dockerfile: ./deploy/celery_worker/Dockerfile
-    image: "global_touch/worker:latest"
+    image: global_touch/worker_${ENV}:latest
     restart: unless-stopped
     command: [supervisord, -c, supervisord.conf]
     container_name: ${WORKER_CONTAINER_NAME}

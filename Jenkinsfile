@@ -52,15 +52,7 @@ pipeline {
             stages {
                 stage('Building the production image') {
                     steps {
-                        sh "docker build -f ./deploy/production/Dockerfile -t global_touch/base:production ."
-                    }
-                }
-
-                stage('Building all container images') {
-                    steps {
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=production app"
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=production beat"
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=production worker"
+                        sh "docker build -f ./deploy/production/Dockerfile -t global_touch/app_production:${env.BUILD_NUMBER} ."
                     }
                 }
 
