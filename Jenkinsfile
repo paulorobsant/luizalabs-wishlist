@@ -56,6 +56,14 @@ pipeline {
                     }
                 }
 
+                stage('Building all container images') {
+                    steps {
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=staging app"
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=staging beat"
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=staging worker"
+                    }
+                }
+
                 stage('Running the production service') {
                     steps {
                         sh "docker-compose -p production up -d --no-deps app"
