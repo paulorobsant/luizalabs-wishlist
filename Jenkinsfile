@@ -56,13 +56,13 @@ pipeline {
                     }
                 }
 
-                stage('Building all container images') {
-                    steps {
-                        sh "docker-compose build app"
-                        sh "docker-compose build beat"
-                        sh "docker-compose build worker"
-                    }
-                }
+//                 stage('Building all container images') {
+//                     steps {
+//                         sh "docker-compose build app"
+//                         sh "docker-compose build beat"
+//                         sh "docker-compose build worker"
+//                     }
+//                 }
 
                 stage('Running the production service') {
                     steps {
