@@ -22,15 +22,15 @@ pipeline {
             stages {
                 stage('Building the staging image') {
                     steps {
-                        sh "docker build -f ./deploy/staging/Dockerfile -t global_touch/staging ."
+                        sh "docker build -f ./deploy/staging/Dockerfile -t global_touch/base:staging ."
                     }
                 }
 
                 stage('Building all container images') {
                     steps {
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} app"
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} beat"
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} worker"
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=staging app"
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=staging beat"
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=staging worker"
                     }
                 }
 
@@ -52,15 +52,15 @@ pipeline {
             stages {
                 stage('Building the production image') {
                     steps {
-                        sh "docker build -f ./deploy/production/Dockerfile -t global_touch/production ."
+                        sh "docker build -f ./deploy/production/Dockerfile -t global_touch/base:production ."
                     }
                 }
 
                 stage('Building all container images') {
                     steps {
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} app"
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} beat"
-                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} worker"
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=production app"
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=production beat"
+                        sh "docker-compose build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} --build-arg ENV=production worker"
                     }
                 }
 
