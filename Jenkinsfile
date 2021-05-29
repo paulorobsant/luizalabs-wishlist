@@ -28,7 +28,7 @@ pipeline {
 
                 stage('Building the staging image') {
                     steps {
-                        sh "docker build -f ./deploy/staging/Dockerfile -t global_touch/staging ."
+                        sh "docker build -f ./deploy/staging/Dockerfile -t global_touch/api_staging ."
                     }
                 }
 
@@ -64,7 +64,7 @@ pipeline {
 
                 stage('Building the production image') {
                     steps {
-                        sh "docker build -f ./deploy/production/Dockerfile -t global_touch/production:latest ."
+                        sh "docker build -f ./deploy/production/Dockerfile -t global_touch/api_production:latest ."
                     }
                 }
 
