@@ -1,5 +1,6 @@
 import datetime
 import json
+import user.services as user_services
 
 from core.database.session import Session
 from core.security import get_password_hash, create_access_token
@@ -69,3 +70,16 @@ def save_token(db: Session, *, obj_in: schemas.Token):
     db.refresh(db_obj)
 
     return db_obj
+
+
+def update_password(db: Session, new_password: str, user_id: str):
+    user = user_services.get_user_by_id(db=db, id=user_id)
+
+    if user.hashed_password:
+        user.hashed_password = get_password_hash(new_password)
+
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    return user

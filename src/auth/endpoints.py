@@ -132,21 +132,40 @@ def create_invitation(*, email: str, company_id: str):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
 
 
-@router.post("/reset_password")
-def reset_password(*, email: str, db: Session = Depends(get_db)):
+@router.post("/forgot_password")
+def forgot_password(*, entry: schemas.UserForgotPassword, db: Session = Depends(get_db)):
     try:
-        user = user_services.get_user_by_email(db=db, email=email)
+        user = user_services.get_user_by_email(db=db, email=entry.email)
 
         # Generate token
-        subject = json.dumps({"email": email})
+        subject = json.dumps({"email": entry.email})
         expires_delta = datetime.timedelta(hours=24)
         code = create_access_token(subject=subject, expires_delta=expires_delta)
 
         if user:
-            send_reset_password_email(email_to=email, name=user.name, code=code.decode("utf-8"))
+            send_reset_password_email(email_to=entry.email, name=user.name, code=code.decode("utf-8"))
 
         return JSONResponse(status_code=200, content={"message": "If your email is registered in the system then you "
                                                                  "will receive an email in a few minutes."})
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="It was not possible to perform the operation.")
+
+
+@router.post("/reset_password")
+def reset_password(*, entry: schemas.UserResetPassword, db: Session = Depends(get_db)):
+    try:
+        # Decode the JWT token
+        decode = jwt.decode(jwt=entry.code, key=str(settings.SECRET_KEY), algorithms=[settings.ALGORITHM])
+
+        # Convert the sub data
+        sub_data = decode.get("sub")
+        sub_data = json.loads(sub_data)
+
+        user = user_services.get_user_by_email(db=db, email=sub_data["email"])
+        auth_services.update_password(db=db, new_password=entry.password, user_id=user.id)
+
+        return JSONResponse(status_code=200, content={"message": "Password was successfully reset."})
     except:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="It was not possible to perform the operation.")

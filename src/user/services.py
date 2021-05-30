@@ -4,6 +4,7 @@ import json
 from core.database.session import Session
 from core.errors.exceptions import Error
 from core.security import get_password_hash, create_access_token
+from core.utils import from_schema_to_model
 from user import models, schemas
 from user.models import User
 

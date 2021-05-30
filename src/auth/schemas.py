@@ -13,26 +13,6 @@ class TokenPayload(BaseModel):
     sub: Optional[str] = None
 
 
-class AuthenticatedUser(BaseModel):
-    email: EmailStr = None
-    is_active: bool = None
-    is_superuser: bool = None
-    username: str = None
-    name: str = None
-
-    class Config:
-        orm_mode = True
-
-
-class AuthenticatedUserUpdate(BaseModel):
-    email: EmailStr = None
-    username: str = None
-    name: str = None
-
-    class Config:
-        orm_mode = True
-
-
 class UserRegister(BaseModel):
     email: EmailStr
     username: str
@@ -41,5 +21,10 @@ class UserRegister(BaseModel):
     code: str = ""
 
 
-class AuthLinkedin(BaseModel):
-    code: str
+class UserResetPassword(BaseModel):
+    password: str
+    code: str = ""
+
+
+class UserForgotPassword(BaseModel):
+    email: str

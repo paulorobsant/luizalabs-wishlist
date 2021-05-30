@@ -7,6 +7,7 @@ class UserBase(BaseModel):
     name: str = None
     email: str = None
     username: str = None
+    password: str = None
 
     class Config:
         orm_mode = True
