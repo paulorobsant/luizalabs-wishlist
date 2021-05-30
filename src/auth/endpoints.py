@@ -165,7 +165,7 @@ def reset_password(*, entry: schemas.UserResetPassword, db: Session = Depends(ge
         user = user_services.get_user_by_email(db=db, email=sub_data["email"])
         auth_services.update_password(db=db, new_password=entry.password, user_id=user.id)
 
-        return JSONResponse(status_code=200, content={"message": "Password was successfully reset."})
+        return JSONResponse(status_code=200, content={"message": "The password was successfully reset."})
     except:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="It was not possible to perform the operation.")
