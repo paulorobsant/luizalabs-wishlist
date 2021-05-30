@@ -119,10 +119,10 @@ def login_access_token(
 
 
 @router.post("/create_invitation", dependencies=[Depends(get_current_active_superuser)])
-def create_invitation(*, email: str, company_id: str):
+def create_invitation(*, entry: schemas.UserInvitation):
     try:
         # Generate token
-        subject = json.dumps({"company_id": company_id, "email": email})
+        subject = json.dumps({"company_id": entry.company_id, "email": entry.email})
         expires_delta = datetime.timedelta(hours=48)
         code = create_access_token(subject=subject, expires_delta=expires_delta)
 

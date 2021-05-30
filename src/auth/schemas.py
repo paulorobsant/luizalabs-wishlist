@@ -28,3 +28,8 @@ class UserResetPassword(BaseModel):
 
 class UserForgotPassword(BaseModel):
     email: str
+
+
+class UserInvitation(BaseModel):
+    email: str
+    company_id: str
