@@ -16,9 +16,10 @@ from company.utils import get_email_suffix
 from core import security
 from core.database.deps import get_db
 from core.database.session import Session
-from core.http_session import get_current_active_superuser
+from core.http_session import get_current_active_superuser, get_current_active_user
 from core.security import create_access_token
 from user import services as user_services, schemas as user_schemas
+from user.models import User
 
 router = APIRouter()
 
@@ -169,3 +170,8 @@ def reset_password(*, entry: schemas.UserResetPassword, db: Session = Depends(ge
     except:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="It was not possible to perform the operation.")
+
+
+@router.get("/me", response_model=schemas.UserAuthenticated)
+def read_me(current_user: User = Depends(get_current_active_user)):
+    return current_user

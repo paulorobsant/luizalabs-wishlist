@@ -38,3 +38,10 @@ class UserForgotPassword(BaseModel):
 class UserInvitation(BaseModel):
     email: str
     company_id: str
+
+
+class UserAuthenticated(BaseModel):
+    email: EmailStr = None
+    is_active: bool = None
+    is_superuser: bool = None
+    name: str
