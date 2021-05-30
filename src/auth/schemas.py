@@ -13,6 +13,11 @@ class TokenPayload(BaseModel):
     sub: Optional[str] = None
 
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
 class UserRegister(BaseModel):
     email: EmailStr
     username: str

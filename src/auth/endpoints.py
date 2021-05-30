@@ -83,28 +83,28 @@ def register(*, entry: schemas.UserRegister, db: Session = Depends(get_db)):
 
 @router.post("/access_token", response_model=schemas.Token)
 def login_access_token(
+        entry: schemas.UserLogin,
         db: Session = Depends(get_db),
-        form_data: OAuth2PasswordRequestForm = Depends(),
         request: Request = None
 ):
     """
     OAuth2 compatible token login, get an access token for future requests
     """
-    user = auth_services.authenticate(db, username=form_data.username, password=form_data.password)
+    user = auth_services.authenticate(db, email=entry.email, password=entry.password)
 
     if not user:
         auth_services.save_login_attempt(
             db=db,
             request=request,
-            email_or_username=form_data.username,
+            email_or_username=entry.email,
             description="A user tried to access an account that does not exist or entered incorrect credentials."
         )
 
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Wrong credentials.")
     elif not user.is_active:
         auth_services.save_login_attempt(
             db=db, request=request,
-            email_or_username=form_data.username,
+            email_or_username=entry.email,
             description="A user tried to access an inactive account."
         )
 
