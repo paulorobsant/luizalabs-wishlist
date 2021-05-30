@@ -6,13 +6,18 @@ from sqlalchemy.dialects.postgresql import ENUM, UUID
 from core.database.models import DBModelMixin
 
 """
-    Entities
+    Enums
 """
 
 
 class TokenType(enum.Enum):
     jwt = 1
     social = 2
+
+
+"""
+    Entities
+"""
 
 
 class Token(DBModelMixin):

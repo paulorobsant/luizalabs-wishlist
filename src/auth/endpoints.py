@@ -1,22 +1,23 @@
 import datetime
 import json
-from datetime import timedelta
-
 import jwt
+import settings as settings
+import auth.services as auth_services
+
+from auth import schemas
+from datetime import timedelta
 from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 from starlette.responses import JSONResponse
-
-import settings as settings
-from auth import schemas
-from auth.services import authenticate, save_login_attempt
+from auth.emails import send_reset_password_email
 from company import services as company_services
 from company.utils import get_email_suffix
 from core import security
 from core.database.deps import get_db
 from core.database.session import Session
 from core.http_session import get_current_active_superuser
+from core.security import create_access_token
 from user import services as user_services, schemas as user_schemas
 
 router = APIRouter()
@@ -25,7 +26,6 @@ router = APIRouter()
 @router.post("/register", response_model=user_schemas.UserRead)
 def register(*, entry: schemas.UserRegister, db: Session = Depends(get_db)):
     db_user = user_services.get_user_by_email(db, email=entry.email)
-    is_valid_to_register = True
 
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -33,33 +33,36 @@ def register(*, entry: schemas.UserRegister, db: Session = Depends(get_db)):
     db_company = company_services.get_company_by_email_suffix(db=db, email_suffix=get_email_suffix(email=entry.email))
 
     if entry.code:
-        user_invitation = user_services.get_user_invitation_by_code(db=db, code=entry.code)
-
-        if not user_invitation:
-            raise HTTPException(status_code=400,
-                                detail="It was not possible to register. Your code invitation is not valid.")
-
-        if (user_invitation.expiration_date - datetime.datetime.now()).days > 2:
-            raise HTTPException(status_code=400,
-                                detail="The registration invitation code has expired.")
-
-        if user_invitation.email != entry.email:
-            raise HTTPException(status_code=400,
-                                detail="It was not possible to register. Your email is not valid.")
-
         # Decode the JWT token
         decode = jwt.decode(jwt=entry.code, key=str(settings.SECRET_KEY), algorithms=[settings.ALGORITHM])
 
         # Convert the sub data
+        exp_data = decode.get("exp")
         sub_data = decode.get("sub")
         sub_data = json.loads(sub_data)
 
-        if not sub_data["company_id"]:
+        # Token Data
+        token_company_id = sub_data["company_id"]
+        token_email = sub_data["email"]
+
+        if not decode:
+            raise HTTPException(status_code=400,
+                                detail="It was not possible to register. Your code invitation is not valid.")
+
+        if (datetime.datetime.fromtimestamp(exp_data) - datetime.datetime.now()).days > 2:
+            raise HTTPException(status_code=400,
+                                detail="The registration invitation code has expired.")
+
+        if token_email != entry.email:
+            raise HTTPException(status_code=400,
+                                detail="It was not possible to register. Your email is not valid.")
+
+        if not token_company_id:
             raise HTTPException(status_code=400,
                                 detail="It was not possible to register. Your invitation is not tied to a group.")
 
         # Find company by ID
-        db_company = company_services.get_company_by_id(db=db, id=sub_data["company_id"])
+        db_company = company_services.get_company_by_id(db=db, id=token_company_id)
 
     if not db_company:
         raise HTTPException(status_code=400, detail="It was not possible to register. Your company is not part of our "
@@ -87,10 +90,10 @@ def login_access_token(
     """
     OAuth2 compatible token login, get an access token for future requests
     """
-    user = authenticate(db, username=form_data.username, password=form_data.password)
+    user = auth_services.authenticate(db, username=form_data.username, password=form_data.password)
 
     if not user:
-        save_login_attempt(
+        auth_services.save_login_attempt(
             db=db,
             request=request,
             email_or_username=form_data.username,
@@ -99,7 +102,7 @@ def login_access_token(
 
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
     elif not user.is_active:
-        save_login_attempt(
+        auth_services.save_login_attempt(
             db=db, request=request,
             email_or_username=form_data.username,
             description="A user tried to access an inactive account."
@@ -116,10 +119,34 @@ def login_access_token(
 
 
 @router.post("/create_invitation", dependencies=[Depends(get_current_active_superuser)])
-def create_invitation(*, email: str, company_id: str, db: Session = Depends(get_db)):
+def create_invitation(*, email: str, company_id: str):
     try:
-        invitation = user_services.create_invitation(db=db, email=email, company_id=company_id)
+        # Generate token
+        subject = json.dumps({"company_id": company_id, "email": email})
+        expires_delta = datetime.timedelta(hours=48)
+        code = create_access_token(subject=subject, expires_delta=expires_delta)
+
         return JSONResponse(status_code=200, content={"message": "The invitation code was successfully generated.",
-                                                      "data": invitation.code})
+                                                      "data": code.decode("utf-8")})
     except:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+
+
+@router.post("/reset_password")
+def reset_password(*, email: str, db: Session = Depends(get_db)):
+    try:
+        user = user_services.get_user_by_email(db=db, email=email)
+
+        # Generate token
+        subject = json.dumps({"email": email})
+        expires_delta = datetime.timedelta(hours=24)
+        code = create_access_token(subject=subject, expires_delta=expires_delta)
+
+        if user:
+            send_reset_password_email(email_to=email, name=user.name, code=code.decode("utf-8"))
+
+        return JSONResponse(status_code=200, content={"message": "If your email is registered in the system then you "
+                                                                 "will receive an email in a few minutes."})
+    except:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="It was not possible to perform the operation.")

@@ -1,10 +1,14 @@
+import datetime
+import json
+
 from core.database.session import Session
-from core.security import get_password_hash
+from core.security import get_password_hash, create_access_token
 from core.security import verify_password
 from auth import schemas
 from auth.models import Token
 from fastapi import Request
 from user.models import User, UserLoginAttemptsLog
+from user.services import get_user_by_email
 
 
 def save_login_attempt(db: Session, request: Request, email_or_username: str, description):
