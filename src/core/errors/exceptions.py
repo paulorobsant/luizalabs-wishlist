@@ -16,3 +16,7 @@ class MatchRequestNotFoundError(Error):
 
 class MatchTermNotFoundError(Error):
     message = "The term was not found."
+
+
+class JWTError(Error):
+    pass

@@ -26,8 +26,8 @@ def save_login_attempt(db: Session, request: Request, email_or_username: str, de
     db.refresh(login_attempt)
 
 
-def authenticate(db: Session, email: str, password: str):
-    db_user = db.query(User).filter(User.email == email).first()
+def authenticate(db: Session, username: str, password: str):
+    db_user = db.query(User).filter(User.username == username).first()
 
     if not db_user:
         return None

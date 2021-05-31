@@ -44,4 +44,7 @@ class UserAuthenticated(BaseModel):
     email: EmailStr = None
     is_active: bool = None
     is_superuser: bool = None
-    name: str
+    name: str = None
+
+    class Config:
+        orm_mode = True

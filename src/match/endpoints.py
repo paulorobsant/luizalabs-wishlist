@@ -122,7 +122,7 @@ def read_connection(*, conn_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=e.message)
 
 
-@router.get("/my_conns", description="Get all connections from connected user")
+@router.get("/my_connections", description="Get all connections from connected user")
 def read_my_all_connections(*, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
     try:
         connections = services.get_all_connections_by_user_id(db, user_id=current_user.id)

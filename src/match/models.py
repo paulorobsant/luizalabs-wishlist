@@ -90,3 +90,14 @@ class MatchTraining(DBModelMixin):
 
     total_prev_entries = Column(Integer(), nullable=False)
     total_new_entries = Column(Integer(), nullable=False)
+
+
+# class MatchRating(DBModelMixin):
+#     __tablename__ = "match_rating"
+#     __table_args__ = {"schema": "public", "extend_existing": True}
+#
+#     rating_id = Column(UUID(as_uuid=True), ForeignKey("public.rating.id"))
+#     rating = relationship("Rating", foreign_keys=[rating_id])
+#
+#     user_id = Column(UUID(as_uuid=True), ForeignKey("public.user.id"))
+#     user = relationship("User", foreign_keys=[user_id])
