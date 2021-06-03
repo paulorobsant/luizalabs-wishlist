@@ -62,17 +62,17 @@ pipeline {
                     }
                 }
 
+                stage('Building the production image') {
+                    steps {
+                        sh "docker build -f ./deploy/production/Dockerfile -t global_touch/api_production:latest ."
+                    }
+                }
+
                 stage('Building all container images') {
                     steps {
                         sh "docker-compose build app"
                         sh "docker-compose build beat"
                         sh "docker-compose build worker"
-                    }
-                }
-
-                stage('Building the production image') {
-                    steps {
-                        sh "docker build -f ./deploy/production/Dockerfile -t global_touch/api_production:latest ."
                     }
                 }
 
