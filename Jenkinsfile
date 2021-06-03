@@ -23,20 +23,7 @@ pipeline {
                 stage('Copying the .env file') {
                     steps {
                         sh "cp ./environments/.env.staging ./.env"
-                    }
-                }
-
-                stage('Building the staging image') {
-                    steps {
-                        sh "docker build -f ./deploy/staging/Dockerfile -t global_touch/api_staging ."
-                    }
-                }
-
-                stage('Building all container images') {
-                    steps {
-                        sh "docker-compose build app"
-                        sh "docker-compose build beat"
-                        sh "docker-compose build worker"
+                        sh "cp ./environments/.env.staging ./src/.env"
                     }
                 }
 
@@ -59,20 +46,7 @@ pipeline {
                 stage('Copying the .env file') {
                     steps {
                         sh "cp ./environments/.env.production ./.env"
-                    }
-                }
-
-                stage('Building the production image') {
-                    steps {
-                        sh "docker build -f ./deploy/production/Dockerfile -t global_touch/api_production:latest ."
-                    }
-                }
-
-                stage('Building all container images') {
-                    steps {
-                        sh "docker-compose build app"
-                        sh "docker-compose build beat"
-                        sh "docker-compose build worker"
+                        sh "cp ./environments/.env.production ./src/.env"
                     }
                 }
 
