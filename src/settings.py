@@ -101,9 +101,9 @@ MODEL_DIR = f"{BASE_PATH}/match/classification/"
     Queues
 """
 
-QUEUE_RECOMMENDATIONS = f"queue_recommendations_{ENV_NAME}"
-QUEUE_EMAILS = f"queue_emails_{ENV_NAME}"
-QUEUE_OVERFLOWED_CONNECTIONS = f"queue_overflowed_connections_{ENV_NAME}"
+QUEUE_RECOMMENDATIONS = f"queue_recommendations"
+QUEUE_EMAILS = f"queue_emails"
+QUEUE_OVERFLOWED_CONNECTIONS = f"queue_overflowed_connections"
 
 """
     Celery Routes
