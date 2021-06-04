@@ -27,6 +27,14 @@ pipeline {
                     }
                 }
 
+                stage('Building all container images') {
+                    steps {
+                        sh "docker-compose build app"
+                        sh "docker-compose build beat"
+                        sh "docker-compose build worker"
+                    }
+                }
+
                 stage('Running the staging service') {
                     steps {
                         sh "docker-compose -p staging up -d --no-deps app"
@@ -47,6 +55,14 @@ pipeline {
                     steps {
                         sh "cp ./environments/.env.production ./.env"
                         sh "cp ./environments/.env.production ./src/.env"
+                    }
+                }
+
+                stage('Building all container images') {
+                    steps {
+                        sh "docker-compose build app"
+                        sh "docker-compose build beat"
+                        sh "docker-compose build worker"
                     }
                 }
 

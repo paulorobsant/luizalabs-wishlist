@@ -1,0 +1,2 @@
+INSERT INTO public."user" (id,created_at,updated_at,is_deleted,email,username,name,phone_number,surname,hashed_password,is_active,is_superuser,is_email_confirmed,email_confirmation_code,password_reset_code,access_failed_count,last_login_time) VALUES
+	 ('87b2fe58-7ced-477b-ac6c-edbe785b8c68','2021-05-29 16:55:58.523009','2021-05-29 16:55:58.523009',false,'dev@globaltouch.com.br','dev','dev',NULL,NULL,'$2b$12$tbNRpJttYfWpwJnPR5JJd.XVEHHKPujUOUgstfuQITpxWGj6RFXju',true,true,false,NULL,NULL,0,NULL);
