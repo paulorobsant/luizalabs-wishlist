@@ -70,7 +70,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
     Email
 """
 
-SMTP_TLS: bool = os.getenv("SMTP_TLS", True)
+SMTP_TLS: bool = os.getenv("SMTP_TLS", "true") == "true"
 SMTP_PORT = os.getenv("SMTP_PORT", "")
 SMTP_HOST = os.getenv("SMTP_HOST", "localhost")
 SMTP_USER = os.getenv("SMTP_USER", "")
