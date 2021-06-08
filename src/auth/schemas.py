@@ -23,7 +23,7 @@ class UserRegister(BaseModel):
     username: str
     name: str
     password: str
-    code: str = ""
+    code: str = None
 
 
 class UserResetPassword(BaseModel):

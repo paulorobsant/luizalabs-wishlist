@@ -31,7 +31,7 @@ def register(*, entry: schemas.UserRegister, db: Session = Depends(get_db)):
         db_user = user_services.get_user_by_email(db, email=entry.email)
 
         if db_user:
-            raise HTTPException(status_code=400, detail={"message": "Email already registered."})
+            return JSONResponse(status_code=400, content={"message": "Email already registered."})
 
         db_company = company_services.get_company_by_email_suffix(db=db,
                                                                   email_suffix=get_email_suffix(email=entry.email))
@@ -88,7 +88,8 @@ def register(*, entry: schemas.UserRegister, db: Session = Depends(get_db)):
 
         return JSONResponse(status_code=200, content={"message": "Your registration was successful."})
     except Exception:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message": "Oops! Something went wrong. Try later."})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message": "Oops! Something went wrong. "
+                                                                                        "Try later."})
 
 
 @router.post("/access_token", response_model=schemas.Token)
