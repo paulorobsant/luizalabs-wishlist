@@ -13,7 +13,7 @@ PROJECT_NAME = os.getenv("PROJECT_NAME", "be")
 SERVER_HOST = os.getenv("SERVER_HOST", "0.0.0.0")
 SERVER_PORT = int(os.getenv("SERVER_PORT", 8001))
 ENV_NAME = os.getenv("ENV", "local")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3001")
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 """
