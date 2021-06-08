@@ -1,4 +1,5 @@
 import logging
+import uuid
 from datetime import timedelta
 
 from celery import group
@@ -143,7 +144,9 @@ def get_recommended_users():
                     "start_datetime": utils.get_datetime(),
                     "end_datetime": (utils.get_datetime() + timedelta(hours=1)),
                     "current_step": MatchStep.IN_PROGRESS,
-                    "data": {},
+                    "data": {
+                        "meeting_url": f"https://meet.jit.si/gt-{uuid.uuid4().hex.upper()[0:6]}"
+                    },
                     "is_approved": False
                 })
 
