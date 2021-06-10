@@ -25,7 +25,8 @@ def read_all_terms(*, search: str = None, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=e.message)
 
 
-@router.get("/terms/{term_id}", response_model=List[schemas.MatchTermRead], dependencies=[Depends(get_current_active_superuser)])
+@router.get("/terms/{term_id}", response_model=List[schemas.MatchTermRead],
+            dependencies=[Depends(get_current_active_superuser)])
 def approve_term(*, term_id: str, db: Session = Depends(get_db)):
     try:
         services.approve_term(db, term_id=term_id)
@@ -36,6 +37,20 @@ def approve_term(*, term_id: str, db: Session = Depends(get_db)):
 
 
 # Connections
+
+@router.get("/my_connections", description="Get all connections from connected user", response_model=schemas.MatchMyConnections)
+def read_my_all_connections(current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    try:
+        next_connections = services.get_next_connections_by_user_id(db=db, user_id=current_user.id)
+        past_connections = services.get_past_connections_by_user_id(db=db, user_id=current_user.id)
+
+        return {
+            "next_connections": next_connections,
+            "past_connections": past_connections
+        }
+    except Error as e:
+        raise HTTPException(status_code=400, detail=e.message)
+
 
 @router.post("/request_conn")
 def request_connection(*, entry: schemas.MatchRequestCreate, db: Session = Depends(get_db)):
@@ -122,17 +137,8 @@ def read_connection(*, conn_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=e.message)
 
 
-@router.get("/my_connections", description="Get all connections from connected user")
-def read_my_all_connections(*, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
-    try:
-        connections = services.get_all_connections_by_user_id(db, user_id=current_user.id)
-
-        return JSONResponse(status_code=200, content={"data": json.dumps(connections)})
-    except Error as e:
-        raise HTTPException(status_code=400, detail=e.message)
-
-
-@router.get("/approve_conn/{conn_id}", description="Approves a connection recommended by the AI", dependencies=[Depends(get_current_active_superuser)])
+@router.get("/approve_conn/{conn_id}", description="Approves a connection recommended by the AI",
+            dependencies=[Depends(get_current_active_superuser)])
 def approve_connection(*, conn_id: str, db: Session = Depends(get_db)):
     try:
         services.approve_connection(db=db, conn_id=conn_id)

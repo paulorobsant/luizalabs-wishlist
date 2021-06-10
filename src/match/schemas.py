@@ -1,9 +1,20 @@
-from typing import Any
+from typing import Any, List
 
 from pydantic import BaseModel
 
 
 # Match Request
+
+class MatchMyConnection(BaseModel):
+    data: Any
+
+    class Config:
+        orm_mode = True
+
+
+class MatchMyConnections(BaseModel):
+    next_connections: List[MatchMyConnection]
+    past_connections: List[MatchMyConnection]
 
 
 class MatchRequestCreate(BaseModel):
