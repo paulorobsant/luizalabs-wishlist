@@ -128,8 +128,26 @@ def get_connection_by_id(db: Session, conn_id: str):
 
 
 def get_all_connections_by_user_id(db: Session, user_id: str):
-    return db.query(models.Match).filter((
-                                                 models.Match.mentor_id == user_id or models.Match.learner_id == user_id) and models.Match.is_approved == True).first()
+    return db.query(models.Match) \
+        .filter(
+        (models.Match.mentor_id == user_id or models.Match.learner_id == user_id) and models.Match.is_approved == True) \
+        .first()
+
+
+def get_next_connections_by_user_id(db: Session, user_id: str):
+    return db.query(models.Match) \
+        .filter((models.Match.mentor_id == user_id or models.Match.learner_id == user_id)
+                and models.Match.is_approved is True
+                and models.Match.status == models.MatchStatus.IN_PROGRESS) \
+        .all()
+
+
+def get_past_connections_by_user_id(db: Session, user_id: str):
+    return db.query(models.Match) \
+        .filter((models.Match.mentor_id == user_id or models.Match.learner_id == user_id)
+                and models.Match.is_approved is True
+                and models.Match.status != models.MatchStatus.IN_PROGRESS) \
+        .all()
 
 
 def cancel_connection_by_id(db: Session, conn_id: str):
