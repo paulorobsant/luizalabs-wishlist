@@ -12,7 +12,7 @@ from match.classification.classifier import load_model, create_model, save_model
 from match.classification.utils import must_retrain_the_model, create_challenges_request
 from match.models import Match
 from match.schemas import MatchRequestInDB, MatchInDB, MatchScheduleCreate, MatchReplaceGuest, MatchTermCreate, \
-    MatchRequestUpdate, MatchUpdate, MatchTermUpdate
+    MatchRequestUpdate, MatchUpdate, MatchTermUpdate, MatchReviewCreate
 from user import models as user_models
 
 """
@@ -362,3 +362,22 @@ def save_or_update_training(db: Session, total_prev_entries: int, total_new_entr
     db.refresh(last_training)
 
     return last_training
+
+
+"""
+    Match Review
+"""
+
+
+def create_review(db: Session, entry: MatchReviewCreate, user_id: str):
+    new_entry = models.MatchReview(
+        comment=entry.comment,
+        user_id=user_id,
+        match_id=entry.match_id
+    )
+
+    db.add(new_entry)
+    db.commit()
+    db.refresh(new_entry)
+
+    return new_entry

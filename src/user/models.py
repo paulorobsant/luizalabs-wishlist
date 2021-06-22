@@ -26,7 +26,6 @@ class User(DBModelMixin):
     __table_args__ = {"schema": "public", "extend_existing": True}
 
     email = Column(String(128), nullable=False)
-    username = Column(String(128), nullable=False)
     name = Column(String(128), nullable=True)
     phone_number = Column(String(128), nullable=True)
     surname = Column(String(128), nullable=True)

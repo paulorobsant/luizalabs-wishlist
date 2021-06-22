@@ -1,12 +1,10 @@
 from typing import Any, List
-
 from pydantic import BaseModel
 
 
 class UserBase(BaseModel):
     name: str = None
     email: str = None
-    username: str = None
     password: str = None
 
     class Config:
@@ -21,7 +19,6 @@ class User(UserBase):
 class UserCreate(UserBase):
     name: str
     email: str
-    username: str
     password: str
 
 
@@ -33,11 +30,13 @@ class UserRead(UserBase):
 
 # User Profile
 
-class UserProfileCreate(UserBase):
+class UserProfileCreate(BaseModel):
     expertises: List[str]
     challenges: List[str]
+    data: Any = None
 
 
-class UserProfileRead(UserBase):
+class UserProfileRead(BaseModel):
     expertises: Any
     challenges: List[str] = None
+    data: Any = None

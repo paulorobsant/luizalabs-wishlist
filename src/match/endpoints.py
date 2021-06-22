@@ -38,7 +38,8 @@ def approve_term(*, term_id: str, db: Session = Depends(get_db)):
 
 # Connections
 
-@router.get("/my_connections", description="Get all connections from connected user", response_model=schemas.MatchMyConnections)
+@router.get("/my_connections", description="Get all connections from connected user",
+            response_model=schemas.MatchMyConnections)
 def read_my_all_connections(current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
     try:
         next_connections = services.get_next_connections_by_user_id(db=db, user_id=current_user.id)
@@ -105,17 +106,19 @@ def reschedule_connection(*, conn_id: str, entry: schemas.MatchScheduleCreate, d
 
         emails.send_connection_scheduled_email(
             email_to=connection.mentor.email,
-            target_conn_name=connection.mentor.name,
-            other_conn_name=connection.learner.name,
-            start_datetime=connection.start_datetime,
+            name=connection.mentor.name,
+            date=str(connection.start_datetime.date()),
+            time=str(connection.start_datetime.time()),
+            is_mentor=True,
             challenge="____"
         )
 
         emails.send_connection_scheduled_email(
             email_to=connection.learner.email,
-            target_conn_name=connection.learner.name,
-            other_conn_name=connection.mentor.name,
-            start_datetime=connection.start_datetime,
+            name=connection.mentor.name,
+            date=str(connection.start_datetime.date()),
+            time=str(connection.start_datetime.time()),
+            is_mentor=False,
             challenge="____"
         )
 
@@ -143,6 +146,16 @@ def approve_connection(*, conn_id: str, db: Session = Depends(get_db)):
     try:
         services.approve_connection(db=db, conn_id=conn_id)
         return JSONResponse(status_code=200, content={"message": "The connection has been successfully approved."})
+    except Error as e:
+        raise HTTPException(status_code=400, detail=e.message)
+
+
+@router.post("/create_review/")
+def create_review(*, entry: schemas.MatchReviewCreate, db: Session = Depends(get_db),
+                  current_user: User = Depends(get_current_active_user)):
+    try:
+        services.create_review(db=db, entry=entry, user_id=current_user.id)
+        return JSONResponse(status_code=200, content={"message": "The review has been successfully created."})
     except Error as e:
         raise HTTPException(status_code=400, detail=e.message)
 

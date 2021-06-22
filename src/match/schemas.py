@@ -98,3 +98,10 @@ class MatchTermRead(MatchTerm):
 class MatchTermUpdate(MatchTerm):
     label: str = None
     is_approved: bool = None
+
+
+# Match Review
+
+class MatchReviewCreate(BaseModel):
+    comment: str
+    match_id: str

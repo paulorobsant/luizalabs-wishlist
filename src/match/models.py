@@ -92,12 +92,30 @@ class MatchTraining(DBModelMixin):
     total_new_entries = Column(Integer(), nullable=False)
 
 
-# class MatchRating(DBModelMixin):
-#     __tablename__ = "match_rating"
-#     __table_args__ = {"schema": "public", "extend_existing": True}
-#
-#     rating_id = Column(UUID(as_uuid=True), ForeignKey("public.rating.id"))
-#     rating = relationship("Rating", foreign_keys=[rating_id])
-#
-#     user_id = Column(UUID(as_uuid=True), ForeignKey("public.user.id"))
-#     user = relationship("User", foreign_keys=[user_id])
+class MatchReview(DBModelMixin):
+    __tablename__ = "match_review"
+    __table_args__ = {"schema": "public", "extend_existing": True}
+
+    comment = Column(String(256), nullable=False, unique=True, index=True)
+
+    user_id = Column(UUID(as_uuid=True), ForeignKey("public.user.id"))
+    user = relationship("User", foreign_keys=[user_id])
+
+    match_id = Column(UUID(as_uuid=True), ForeignKey("public.match.id"))
+    match = relationship("Match", foreign_keys=[match_id])
+
+
+class MatchRating(DBModelMixin):
+    __tablename__ = "match_rating"
+    __table_args__ = {"schema": "public", "extend_existing": True}
+
+    answer = Column(String(512), nullable=False)
+
+    rating_group_id = Column(UUID(as_uuid=True), ForeignKey("public.rating_group.id"), index=True)
+    rating_group = relationship("RatingGroup", foreign_keys=[rating_group_id])
+
+    user_id = Column(UUID(as_uuid=True), ForeignKey("public.user.id"))
+    user = relationship("User", foreign_keys=[user_id])
+
+    match_id = Column(UUID(as_uuid=True), ForeignKey("public.match.id"), index=True)
+    match = relationship("Match", foreign_keys=[user_id])
