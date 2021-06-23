@@ -33,9 +33,11 @@
             {% block content %}{% endblock %}
           </p>
 
-          <p style="color: #828282; text-align: center; font-size: 12px; margin-top: 50px;">
-            Você está recebendo este e-mail porque você assinou para receber atualizações e informações sobre o nosso produto. Caso não queira mais receber nossos contatos, por favor, <a href="#" style="color: #E50046; text-decoration: none;">clique aqui</a>.
-          </p>
+          {% if is_marketing_email %}
+            <p style="color: #828282; text-align: center; font-size: 12px; margin-top: 50px;">
+              Você está recebendo este e-mail porque você assinou para receber atualizações e informações sobre o nosso produto. Caso não queira mais receber nossos contatos, por favor, <a href="#" style="color: #E50046; text-decoration: none;">clique aqui</a>.
+            </p>
+          {% endif %}
         </div>
       </div>
     </div>
