@@ -3,7 +3,6 @@ import enum
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.dialects.postgresql import ENUM, UUID
 from sqlalchemy.orm import relationship
-
 from core.database.models import DBModelMixin
 
 """
@@ -34,6 +33,7 @@ class RatingQuestion(DBModelMixin):
 
     type = Column(ENUM(RatingQuestionType), nullable=False)
     question = Column(String(256), nullable=True)
+    answers = relationship("MatchRatingAnswer", back_populates="rating_question")
 
 
 class RatingFormQuestion(DBModelMixin):
@@ -44,4 +44,4 @@ class RatingFormQuestion(DBModelMixin):
     rating_question = relationship("RatingQuestion", foreign_keys=[rating_question_id])
 
     rating_form_id = Column(UUID(as_uuid=True), ForeignKey("public.rating_form.id"))
-    rating_form = relationship("Rating", foreign_keys=[rating_form_id])
+    rating_form = relationship("RatingForm", foreign_keys=[rating_form_id])
