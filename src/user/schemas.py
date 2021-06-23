@@ -37,6 +37,9 @@ class UserProfileCreate(BaseModel):
 
 
 class UserProfileRead(BaseModel):
-    expertises: Any
-    challenges: List[str] = None
-    data: Any = None
+    expertises: List[str]
+    challenges: List[str]
+    data: Any
+
+    class Config:
+        orm_mode = True
