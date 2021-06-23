@@ -84,7 +84,9 @@ def process_alert_connections():
 
         tasks = [process_alert_connection.s(connection.id) for connection in connections]
         results = group(tasks)()
-        print(results.get())
+
+        if results.ready():
+            results.get()
 
     except Exception as e:
         LOGGER.exception(e)
@@ -145,7 +147,8 @@ def get_recommended_users():
                     "end_datetime": (utils.get_datetime() + timedelta(hours=1)),
                     "current_step": MatchStep.IN_PROGRESS,
                     "data": {
-                        "meeting_url": f"https://meet.jit.si/gt-{uuid.uuid4().hex.upper()[0:6]}"
+                        "meeting_url": f"https://meet.jit.si/gt-{uuid.uuid4().hex.upper()[0:6]}",
+                        "topic": match_challenge
                     },
                     "is_approved": False
                 })
