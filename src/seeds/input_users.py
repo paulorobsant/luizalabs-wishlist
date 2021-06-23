@@ -60,4 +60,3 @@ def add_all_users(n=10):
 
         user_profile = schemas.UserProfileCreate(**user_profile)
         user_services.create_user_profile(db=Session(), user_id=user.id, entry=user_profile)
-
