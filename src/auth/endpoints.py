@@ -101,7 +101,7 @@ def login_access_token(
     """
     OAuth2 compatible token login, get an access token for future requests
     """
-    user = auth_services.authenticate(db, username=form_data.username, password=form_data.password)
+    user = auth_services.authenticate(db, email=form_data.username, password=form_data.password)
 
     if not user:
         auth_services.save_login_attempt(
@@ -137,7 +137,7 @@ def create_invitation(*, entry: schemas.UserInvitation):
         expires_delta = datetime.timedelta(hours=48)
         code = create_access_token(subject=subject, expires_delta=expires_delta)
 
-        return JSONResponse(status_code=200, content={"message": "The invitation code was successfully generated.",
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "The invitation code was successfully generated.",
                                                       "data": code.decode("utf-8")})
     except:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
@@ -156,7 +156,7 @@ def forgot_password(*, entry: schemas.UserForgotPassword, db: Session = Depends(
         if user:
             send_reset_password_email(email_to=entry.email, name=user.name, code=code.decode("utf-8"))
 
-        return JSONResponse(status_code=200, content={"message": "If your email is registered in the system then you "
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "If your email is registered in the system then you "
                                                                  "will receive an email in a few minutes."})
     except:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -174,9 +174,13 @@ def reset_password(*, entry: schemas.UserResetPassword, db: Session = Depends(ge
         sub_data = json.loads(sub_data)
 
         user = user_services.get_user_by_email(db=db, email=sub_data["email"])
+
+        if not user:
+            return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "The validation code is not valid."})
+
         auth_services.update_password(db=db, new_password=entry.password, user_id=user.id)
 
-        return JSONResponse(status_code=200, content={"message": "The password was successfully reset."})
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "The password was successfully reset."})
     except:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="It was not possible to perform the operation.")
