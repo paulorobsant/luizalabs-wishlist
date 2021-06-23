@@ -4,9 +4,19 @@ from pydantic import BaseModel
 
 
 # Match Request
+class MatchUser(BaseModel):
+    name: str
+
+    class Config:
+        orm_mode = True
+
 
 class MatchMyConnection(BaseModel):
     data: Any
+    mentor: MatchUser
+    learner: MatchUser
+    start_datetime: Any
+    end_datetime: Any
 
     class Config:
         orm_mode = True
