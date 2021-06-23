@@ -26,10 +26,7 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 
-from rating.models import *
-from user.models import *
-from match.models import *
-from company.models import *
+from models import *
 
 target_metadata = Base.metadata
 schemas = ["public", "logs"]
