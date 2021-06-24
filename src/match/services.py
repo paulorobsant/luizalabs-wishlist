@@ -92,7 +92,8 @@ def create_connection(db: Session, entry: MatchInDB):
         status=entry.status,
         current_step=entry.current_step,
         data=entry.data,
-        is_approved=entry.is_approved
+        is_approved=entry.is_approved,
+        id=entry.id
     )
 
     db.add(new_entry)

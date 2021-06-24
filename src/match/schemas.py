@@ -62,6 +62,7 @@ class MatchRequestInDB(BaseModel):
 # Match
 
 class MatchInDB(BaseModel):
+    id: Any
     mentor_id: Any
     learner_id: Any
     start_datetime: Any

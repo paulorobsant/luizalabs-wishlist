@@ -139,6 +139,8 @@ def get_recommended_users():
                 if has_pending_connection:
                     continue
 
+                new_connection_id = uuid.uuid4()
+
                 new_connection = schemas.MatchInDB(**{
                     "mentor_id": up.user_id,
                     "learner_id": match_request.user_id,
@@ -147,10 +149,11 @@ def get_recommended_users():
                     "end_datetime": (utils.get_datetime() + timedelta(hours=1)),
                     "current_step": MatchStep.IN_PROGRESS,
                     "data": {
-                        "meeting_url": f"https://meet.jit.si/gt-{uuid.uuid4().hex.upper()[0:6]}",
+                        "meeting_url": f"https://meet.jit.si/gt-{str(new_connection_id)}",
                         "topic": match_challenge
                     },
-                    "is_approved": False
+                    "is_approved": False,
+                    "id": new_connection_id
                 })
 
                 services.create_connection(db=db, entry=new_connection)
