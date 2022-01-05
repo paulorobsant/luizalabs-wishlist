@@ -20,7 +20,6 @@ class UserLogin(BaseModel):
 
 class UserRegister(BaseModel):
     email: EmailStr
-    username: str
     name: str
     password: str
     code: str = None

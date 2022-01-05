@@ -1,27 +1,12 @@
-import rollbar
-import sentry_sdk
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
-from rollbar.contrib.fastapi import ReporterMiddleware as RollbarMiddleware
 
 import settings
 from router import router
 
 if __name__ == "__main__":
-
-    """
-        Logs
-    """
-
-    sentry_sdk.init(
-        "https://f92f148c75904f54afa9589ad75e6dc2@o421890.ingest.sentry.io/5731692",
-        traces_sample_rate=1.0,
-        environment=settings.ENV_NAME
-    )
-
-    rollbar.init("52839cbb5d2b478ca55d8766ce6b47f1", settings.ENV_NAME)
 
     """
         Env. Variables
@@ -38,8 +23,6 @@ if __name__ == "__main__":
     if not settings.ALLOWED_HOSTS:
         ALLOWED_HOSTS = ["*"]
 
-    app.add_middleware(RollbarMiddleware)
-
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -51,7 +34,6 @@ if __name__ == "__main__":
     """
         Server
     """
-
     app.include_router(router, prefix=settings.API_STR)
 
     uvicorn.run(app, host=settings.SERVER_HOST, port=settings.SERVER_PORT)

@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
-from settings import PSQL_URL, MONGO_HOST, MONGO_PORT
+from settings import PSQL_URL
 from pymongo import MongoClient
 
 ENGINE = create_engine(
@@ -21,9 +21,3 @@ Session = scoped_session(
 
 Base = declarative_base()
 Base.query = Session.query_property()
-
-"""
-    MongoDB
-"""
-
-client = MongoClient(host=MONGO_HOST, port=MONGO_PORT)

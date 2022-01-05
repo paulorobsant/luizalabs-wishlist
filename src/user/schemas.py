@@ -28,18 +28,5 @@ class UserRead(UserBase):
     email: str
 
 
-# User Profile
-
-class UserProfileCreate(BaseModel):
-    expertises: List[str]
-    challenges: List[str]
-    data: Any = None
-
-
-class UserProfileRead(BaseModel):
-    expertises: List[str]
-    challenges: List[str]
-    data: Any
-
-    class Config:
-        orm_mode = True
+class UserUpdate(UserBase):
+    id: Any

@@ -1,23 +1,16 @@
 from core.database.session import Session
 from core.security import get_password_hash
+from core.utils import from_schema_to_model
 from user import models, schemas
 from user.models import User
-
-
-def get_total_of_users(db: Session):
-    return db.query(models.User).count()
 
 
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
-def get_user_by_id(db: Session, id: str) -> User:
-    return db.query(models.User).filter(models.User.id == id).first()
-
-
-def get_all_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.User).offset(skip).limit(limit).all()
+def get_user_by_id(db: Session, user_id: str) -> User:
+    return db.query(models.User).filter(models.User.id == user_id).first()
 
 
 def create_user(db: Session, user: schemas.UserCreate):
@@ -34,21 +27,24 @@ def create_user(db: Session, user: schemas.UserCreate):
     return new_entry
 
 
-# User Profile
+def delete_user(db: Session, user_id: str):
+    entry = db.query(models.User).filter(models.User.id == user_id).first()
 
-def get_user_profile_by_user_id(db: Session, user_id: str):
-    return db.query(models.UserProfile).filter(models.UserProfile.user_id == user_id).first()
+    if not entry:
+        raise Exception("User not found.")
+
+    db.delete(entry)
+    db.commit()
 
 
-def create_user_profile(db: Session, user_id: str, entry: schemas.UserProfileCreate):
-    new_entry = models.UserProfile(
-        user_id=user_id,
-        expertises=entry.expertises,
-        challenges=entry.challenges
-    )
+def update_user(db: Session, entry: schemas.UserUpdate):
+    current_entry = db.query(models.User).filter(models.User.id == entry.id).first()
+
+    if not current_entry:
+        raise Exception("User not found.")
+
+    new_entry = from_schema_to_model(schema=entry, model=current_entry)
 
     db.add(new_entry)
     db.commit()
     db.refresh(new_entry)
-
-    return new_entry
