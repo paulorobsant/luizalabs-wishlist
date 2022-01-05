@@ -1,5 +1,0 @@
-INSERT INTO public."user" (id,created_at,updated_at,is_deleted,email,username,name,phone_number,surname,hashed_password,is_active,is_superuser,is_email_confirmed,email_confirmation_code,password_reset_code,access_failed_count,last_login_time) VALUES
-	 ('87b2fe58-7ced-477b-ac6c-edbe785b8c68','2021-05-29 16:55:58.523009','2021-05-29 16:55:58.523009',false,'dev@globaltouch.com.br','dev','dev',NULL,NULL,'$2b$12$tbNRpJttYfWpwJnPR5JJd.XVEHHKPujUOUgstfuQITpxWGj6RFXju',true,true,false,NULL,NULL,0,NULL);
-INSERT INTO public.user_profile
-(id, created_at, updated_at, is_deleted, expertises, challenges, total_conn_as_mentor, total_conn_as_learner, user_id, "data")
-VALUES(uuid_generate_v4(), '2021-05-29 16:55:58.523009', '2021-05-29 16:55:58.523009', false, '{"machine learning"}', '{"machine learning"}', 0, 0, '87b2fe58-7ced-477b-ac6c-edbe785b8c68', '[]');
