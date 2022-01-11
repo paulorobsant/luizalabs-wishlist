@@ -16,8 +16,7 @@ def get_user_by_id(db: Session, user_id: str) -> User:
 def create_user(db: Session, user: schemas.UserCreate):
     new_entry = models.User(
         email=user.email,
-        name=user.name,
-        hashed_password=get_password_hash(user.password)
+        name=user.name
     )
 
     db.add(new_entry)

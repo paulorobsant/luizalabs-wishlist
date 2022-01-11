@@ -18,13 +18,13 @@ class DBModelMixin(Base, DBSerializerMixin):
     is_deleted = Column(Boolean, nullable=False, default=False)
 
 
-class LogModelMixin(Base, DBSerializerMixin):
-    __abstract__ = True
-
-    id = Column(UUID(as_uuid=True), primary_key=True, server_default=sqlalchemy.text("uuid_generate_v4()"))
-    browser_info = Column(String(512), nullable=True)
-    client_ip_address = Column(String(18), nullable=False)
-    client_name = Column(String(512), nullable=True)
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
-    description = Column(String(1024), nullable=True)
+# class LogModelMixin(Base, DBSerializerMixin):
+#     __abstract__ = True
+#
+#     id = Column(UUID(as_uuid=True), primary_key=True, server_default=sqlalchemy.text("uuid_generate_v4()"))
+#     browser_info = Column(String(512), nullable=True)
+#     client_ip_address = Column(String(18), nullable=False)
+#     client_name = Column(String(512), nullable=True)
+#     created_at = Column(DateTime, default=func.now())
+#     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+#     description = Column(String(1024), nullable=True)

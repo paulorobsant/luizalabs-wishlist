@@ -9,11 +9,11 @@ from core.database.models import DBModelMixin
 """
 
 
-class User(DBModelMixin):
-    __tablename__ = "user"
+class Wishlist(DBModelMixin):
+    __tablename__ = "wishlist"
     __table_args__ = {"schema": "public", "extend_existing": True}
 
-    email = Column(String(128), nullable=False)
-    name = Column(String(128), nullable=True)
-    hashed_password = Column(String(512), nullable=False)
+    products_id = Column(ARRAY(String), nullable=False)
 
+    user_id = Column(UUID(as_uuid=True), ForeignKey("public.user.id"))
+    user = relationship("User", foreign_keys=[user_id])

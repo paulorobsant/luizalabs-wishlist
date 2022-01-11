@@ -23,27 +23,26 @@ def register(*, entry: schemas.UserRegister, db: Session = Depends(get_db)):
         db_user = user_services.get_user_by_email(db, email=entry.email)
 
         if db_user:
-            return JSONResponse(status_code=400, content={"message": "Email already registered."})
+            return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "Email already registered."})
 
-        entry = user_schemas.UserCreate(**{
-            "name": entry.name,
-            "email": entry.email,
-            "password": entry.password
-        })
+        entry = schemas.UserRegister(
+            name=entry.name,
+            email=entry.email,
+            password=entry.password
+        )
 
-        user_services.create_user(db=db, user=entry)
+        auth_services.register(db=db, entry=entry)
 
-        return JSONResponse(status_code=200, content={"message": "Your registration was successful."})
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail={"message": "Oops! Something went wrong. "
-                                                                                        "Try later."})
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Your registration was successful."})
+    except:
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": "Oops! Something went wrong. "
+                                                                                         "Try later."})
 
 
 @router.post("/access_token", response_model=schemas.Token)
 def login_access_token(
         form_data: OAuth2PasswordRequestForm = Depends(),
-        db: Session = Depends(get_db),
-        request: Request = None
+        db: Session = Depends(get_db)
 ):
     """
     OAuth2 compatible token login, get an access token for future requests
@@ -51,22 +50,7 @@ def login_access_token(
     user = auth_services.authenticate(db, email=form_data.username, password=form_data.password)
 
     if not user:
-        auth_services.save_login_attempt(
-            db=db,
-            request=request,
-            email_or_username=form_data.username,
-            description="A user tried to access an account that does not exist or entered incorrect credentials."
-        )
-
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Wrong credentials.")
-    elif not user.is_active:
-        auth_services.save_login_attempt(
-            db=db, request=request,
-            email_or_username=form_data.username,
-            description="A user tried to access an inactive account."
-        )
-
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Inactive user")
+        return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content={"message": "Wrong credentials."})
 
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
@@ -74,8 +58,3 @@ def login_access_token(
         "access_token": security.create_access_token(user.id, expires_delta=access_token_expires),
         "token_type": "Bearer",
     }
-
-
-@router.get("/me", response_model=schemas.UserAuthenticated)
-def read_me(current_user: User = Depends(get_current_active_user)):
-    return current_user

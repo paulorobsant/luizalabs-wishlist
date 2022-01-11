@@ -27,7 +27,7 @@ def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    user = get_user_by_id(db=db, id=str(token_data.sub))
+    user = get_user_by_id(db=db, user_id=str(token_data.sub))
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
